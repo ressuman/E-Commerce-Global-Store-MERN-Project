@@ -2,10 +2,11 @@
   "name": "personal-project-51-mern-react-express-e-commerce-store-markethub-shopmart-project",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js"
   },
   "keywords": [
     "ecommerce",
