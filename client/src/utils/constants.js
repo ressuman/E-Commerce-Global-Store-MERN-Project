@@ -1,7 +1,4 @@
-export const BASE_URL =
-  import.meta.env.NODE_ENV === "development"
-    ? "http://localhost:5330" // Local backend during development
-    : "https://your-production-api.com"; // Replace with the production API URL
+export const BASE_URL = "http://localhost:5173";
 
 export const AUTH_URL = `${BASE_URL}/api/v1/auth`;
 export const USERS_URL = `${BASE_URL}/api/v1/users`;

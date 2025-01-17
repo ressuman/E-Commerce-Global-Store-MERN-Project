@@ -27,8 +27,12 @@ const app = express();
 
 // Middleware
 app.use(helmet()); // Secure HTTP headers
-app.use(cors()); // Enable CORS
-//app.use(cors({ origin: process.env.CLIENT_URL || "*" })); // Configure CORS
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "*", // Frontend URL
+    credentials: true, // Allow cookies
+  })
+); // Configure CORS
 app.use(morgan("dev")); // Logging requests
 app.use(express.json({ limit: "20mb" })); // Limit JSON payload size
 app.use(express.urlencoded({ extended: true, limit: "20mb" })); // Limit URL-encoded payload size

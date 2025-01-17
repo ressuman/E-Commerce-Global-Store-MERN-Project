@@ -9,8 +9,10 @@ const createToken = (res, userId) => {
 
   res.cookie("jwt", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV !== "development",
+    //secure: false, // Ensure false for development
     sameSite: "strict",
+    //sameSite: "lax", // Use "lax" instead of "strict" for cross-site requests during login
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
   });
 

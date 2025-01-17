@@ -3,6 +3,7 @@ import { BASE_URL } from "../../utils/constants";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: BASE_URL,
+  credentials: "include", // Include cookies in the request
   prepareHeaders: (headers, { getState }) => {
     const token = getState().auth?.token; // Adjust if token is stored differently
     if (token) {

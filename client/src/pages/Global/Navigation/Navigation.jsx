@@ -12,6 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useLogoutUserMutation } from "../../../redux/api/authApiSlice";
 import { logout } from "../../../redux/features/auth/authSlice";
+import { toast } from "react-toastify";
 
 export default function Navigation() {
   const dispatch = useDispatch();
@@ -28,30 +29,25 @@ export default function Navigation() {
     setDropdownOpen(!dropdownOpen);
   };
 
-  const toggleSidebar = () => {
-    setShowSidebar(!showSidebar);
-  };
+  // const toggleSidebar = () => {
+  //   setShowSidebar(!showSidebar);
+  // };
 
-  const closeSidebar = () => {
-    setShowSidebar(false);
-  };
+  // const closeSidebar = () => {
+  //   setShowSidebar(false);
+  // };
 
   const logoutHandler = async () => {
-    if (!authState?.userInfo) {
-      console.warn("User is already logged out.");
-      navigate("/login");
-      return;
-    }
-
     try {
       await logoutApiCall().unwrap(); // Trigger API call to log out
       dispatch(logout()); // Reset auth state
+      toast.success("User Logged out successfully.");
       navigate("/login"); // Redirect to login page
     } catch (err) {
       console.error("Logout failed:", err); // Log error for debugging
-
+      toast.error("An error occurred during logout. Please try again.");
       // Optional: Show user-friendly error message
-      alert("An error occurred during logout. Please try again.");
+      // alert("An error occurred during logout. Please try again.");
     }
   };
 
@@ -60,7 +56,7 @@ export default function Navigation() {
       style={{ zIndex: 9999 }}
       className={`${
         showSidebar ? "hidden" : "flex"
-      } xl:flex lg:flex md:hidden sm:hidden flex-col justify-between p-4 text-white bg-[#000] w-[4%] hover:w-[15%] h-screen fixed`}
+      } xl:flex lg:flex md:hidden sm:hidden flex-col justify-between p-4 text-white bg-[#000] w-[8%] hover:w-[15%] h-screen fixed`}
       id="navigation-container"
     >
       {/* Navigation Links */}
@@ -146,10 +142,10 @@ export default function Navigation() {
         </button>
 
         {/* Dropdown Menu */}
-        {/* {dropdownOpen && userInfo && (
+        {dropdownOpen && userInfo && (
           <ul
-            className={`absolute right-0 mt-2 w-48 space-y-2 bg-white text-gray-600 ${
-              userInfo.isAdmin ? "-top-80" : "-top-20"
+            className={`absolute right-0 mt-2 space-y-2 bg-pink-500 text-white hover:text-gray-950 ${
+              !userInfo.isAdmin ? "-top-20" : "-top-80"
             }`}
           >
             {userInfo.isAdmin && (
@@ -164,7 +160,7 @@ export default function Navigation() {
                 </li>
                 <li>
                   <Link
-                    to="/admin/productlist"
+                    to="/admin/productList"
                     className="block px-4 py-2 hover:bg-gray-100"
                   >
                     Products
@@ -172,7 +168,7 @@ export default function Navigation() {
                 </li>
                 <li>
                   <Link
-                    to="/admin/categorylist"
+                    to="/admin/categoryList"
                     className="block px-4 py-2 hover:bg-gray-100"
                   >
                     Category
@@ -180,7 +176,7 @@ export default function Navigation() {
                 </li>
                 <li>
                   <Link
-                    to="/admin/orderlist"
+                    to="/admin/orderList"
                     className="block px-4 py-2 hover:bg-gray-100"
                   >
                     Orders
@@ -188,7 +184,7 @@ export default function Navigation() {
                 </li>
                 <li>
                   <Link
-                    to="/admin/userlist"
+                    to="/admin/userList"
                     className="block px-4 py-2 hover:bg-gray-100"
                   >
                     Users
@@ -204,38 +200,38 @@ export default function Navigation() {
             </li>
             <li>
               <button
-                //onClick={logoutHandler}
+                onClick={logoutHandler}
                 className="block w-full px-4 py-2 text-left hover:bg-gray-100"
               >
                 Logout
               </button>
             </li>
           </ul>
-        )} */}
+        )}
 
         {/* Login/Register Links */}
-        {/* {!userInfo && ( */}
-        <ul className="mt-5 space-y-2">
-          <li>
-            <Link
-              to="/login"
-              className="flex items-center transition-transform transform hover:translate-x-2"
-            >
-              <AiOutlineLogin className="mr-2 mt-[1rem]" size={20} />
-              <span className="hidden nav-item-name mt-[1rem]">LOGIN</span>
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/register"
-              className="flex items-center transition-transform transform hover:translate-x-2"
-            >
-              <AiOutlineUserAdd className="mr-2 mt-[1rem]" size={20} />
-              <span className="hidden nav-item-name mt-[1rem]">REGISTER</span>
-            </Link>
-          </li>
-        </ul>
-        {/* )} */}
+        {!userInfo && (
+          <ul className="mt-5 space-y-2">
+            <li>
+              <Link
+                to="/login"
+                className="flex items-center transition-transform transform hover:translate-x-2"
+              >
+                <AiOutlineLogin className="mr-2 mt-[1rem]" size={20} />
+                <span className="hidden nav-item-name mt-[1rem]">LOGIN</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/register"
+                className="flex items-center transition-transform transform hover:translate-x-2"
+              >
+                <AiOutlineUserAdd className="mr-2 mt-[1rem]" size={20} />
+                <span className="hidden nav-item-name mt-[1rem]">REGISTER</span>
+              </Link>
+            </li>
+          </ul>
+        )}
       </div>
     </div>
   );

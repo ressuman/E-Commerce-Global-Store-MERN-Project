@@ -6,15 +6,17 @@ import { Route, RouterProvider, createRoutesFromElements } from "react-router";
 import { createBrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./redux/store/store.js";
+import Login from "./pages/Auth/Login.jsx";
+import Register from "./pages/Auth/Register.jsx";
 
 // Router Configuration
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       {/* Public Routes */}
-      {/* <Route path="/login" element={<Login />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route index element={<Home />} />
+      {/* <Route index element={<Home />} />
       <Route path="/favorite" element={<Favorites />} />
       <Route path="/product/:id" element={<ProductDetails />} />
       <Route path="/cart" element={<Cart />} />

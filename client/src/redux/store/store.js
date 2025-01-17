@@ -29,7 +29,9 @@ const store = configureStore({
   // preloadedState: {
   //   favorites: initialFavorites,
   // },
-
+  // middleware: (getDefaultMiddleware) =>
+  //   getDefaultMiddleware().concat(apiSlice.middleware),
+  // devTools: true,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false, // Disable if you encounter issues with non-serializable data
