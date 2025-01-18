@@ -60,7 +60,7 @@ export default function Login() {
             <div className="my-[2rem]">
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-black"
+                className="block text-sm font-medium text-white"
               >
                 Email Address
               </label>
@@ -79,7 +79,7 @@ export default function Login() {
             <div className="mb-4">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-black"
+                className="block text-sm font-medium text-white"
               >
                 Password
               </label>
@@ -114,7 +114,7 @@ export default function Login() {
 
           {/* Register Link */}
           <div className="mt-4">
-            <p className="text-black">
+            <p className="text-white">
               New Customer?{" "}
               <Link
                 to={redirect ? `/register?redirect=${redirect}` : "/register"}

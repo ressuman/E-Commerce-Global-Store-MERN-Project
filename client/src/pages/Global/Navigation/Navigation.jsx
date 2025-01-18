@@ -144,7 +144,7 @@ export default function Navigation() {
         {/* Dropdown Menu */}
         {dropdownOpen && userInfo && (
           <ul
-            className={`absolute right-0 mt-2 space-y-2 bg-pink-500 text-white hover:text-gray-950 ${
+            className={`absolute right-0 mt-2 space-y-2 bg-white text-gray-600 hover:text-gray-950 ${
               !userInfo.isAdmin ? "-top-20" : "-top-80"
             }`}
           >
@@ -194,14 +194,17 @@ export default function Navigation() {
             )}
 
             <li>
-              <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">
+              <Link
+                to="/profile"
+                className="block px-4 py-2 hover:bg-gray-500 hover:text-white"
+              >
                 Profile
               </Link>
             </li>
             <li>
               <button
                 onClick={logoutHandler}
-                className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                className="block px-4 py-2 text-left hover:bg-gray-500 hover:text-white"
               >
                 Logout
               </button>

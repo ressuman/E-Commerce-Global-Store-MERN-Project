@@ -8,6 +8,10 @@ import { Provider } from "react-redux";
 import store from "./redux/store/store.js";
 import Login from "./pages/Auth/Login.jsx";
 import Register from "./pages/Auth/Register.jsx";
+import PrivateRoute from "./components/PrivateRoute.jsx";
+import Profile from "./pages/User/Profile.jsx";
+import AdminPrivateRoute from "./components/AdminPrivateRoute.jsx";
+import UserList from "./pages/Admin/UserList.jsx";
 
 // Router Configuration
 const router = createBrowserRouter(
@@ -23,24 +27,24 @@ const router = createBrowserRouter(
       <Route path="/shop" element={<Shop />} /> */}
 
       {/* Protected Routes for Registered Users */}
-      {/* <Route path="" element={<PrivateRoute />}>
+      <Route path="" element={<PrivateRoute />}>
         <Route path="/profile" element={<Profile />} />
-        <Route path="/shipping" element={<Shipping />} />
+        {/* <Route path="/shipping" element={<Shipping />} />
         <Route path="/placeorder" element={<PlaceOrder />} />
-        <Route path="/order/:id" element={<Order />} />
-      </Route> */}
+        <Route path="/order/:id" element={<Order />} /> */}
+      </Route>
 
       {/* Admin Routes */}
-      {/* <Route path="/admin" element={<AdminRoute />}>
-        <Route path="dashboard" element={<AdminDashboard />} />
-        <Route path="userlist" element={<UserList />} />
-        <Route path="categorylist" element={<CategoryList />} />
+      <Route path="/admin" element={<AdminPrivateRoute />}>
+        {/* <Route path="dashboard" element={<AdminDashboard />} /> */}
+        <Route path="userList" element={<UserList />} />
+        {/* <Route path="categorylist" element={<CategoryList />} />
         <Route path="productlist" element={<ProductList />} />
         <Route path="allproductslist" element={<AllProducts />} />
         <Route path="productlist/:pageNumber" element={<ProductList />} />
         <Route path="product/update/:_id" element={<ProductUpdate />} />
-        <Route path="orderlist" element={<OrderList />} />
-      </Route> */}
+        <Route path="orderlist" element={<OrderList />} /> */}
+      </Route>
     </Route>
   )
 );

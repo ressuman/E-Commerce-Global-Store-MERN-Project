@@ -27,15 +27,20 @@ const app = express();
 
 // Middleware
 app.use(helmet()); // Secure HTTP headers
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "*", // Frontend URL
+    origin: "http://localhost:5173", // Frontend URL
     credentials: true, // Allow cookies
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   })
 ); // Configure CORS
+
 app.use(morgan("dev")); // Logging requests
-app.use(express.json({ limit: "20mb" })); // Limit JSON payload size
-app.use(express.urlencoded({ extended: true, limit: "20mb" })); // Limit URL-encoded payload size
+//app.use(express.json({ limit: "20mb" })); // Limit JSON payload size
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // Limit URL-encoded payload size
+//app.use(express.urlencoded({ extended: true, limit: "20mb" }));
 app.use(cookieParser());
 
 // Routes

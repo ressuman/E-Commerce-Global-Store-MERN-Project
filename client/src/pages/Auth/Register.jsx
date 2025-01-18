@@ -68,7 +68,7 @@ export default function Register() {
           <div className="my-[2rem]">
             <label
               htmlFor="name"
-              className="block text-sm font-medium text-black"
+              className="block text-sm font-medium text-white"
             >
               Name
             </label>
@@ -86,7 +86,7 @@ export default function Register() {
           <div className="my-[2rem]">
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-black"
+              className="block text-sm font-medium text-white"
             >
               Email Address
             </label>
@@ -104,7 +104,7 @@ export default function Register() {
           <div className="my-[2rem]">
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-black"
+              className="block text-sm font-medium text-white"
             >
               Password
             </label>
@@ -122,7 +122,7 @@ export default function Register() {
           <div className="my-[2rem]">
             <label
               htmlFor="confirmPassword"
-              className="block text-sm font-medium text-black"
+              className="block text-sm font-medium text-white"
             >
               Confirm Password
             </label>
@@ -157,7 +157,7 @@ export default function Register() {
 
         {/* Redirect to Login */}
         <div className="mt-4">
-          <p className="text-black">
+          <p className="text-white">
             Already have an account?{" "}
             <Link
               to={redirect ? `/login?redirect=${redirect}` : "/login"}
