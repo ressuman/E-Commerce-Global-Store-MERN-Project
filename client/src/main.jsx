@@ -12,6 +12,7 @@ import PrivateRoute from "./components/PrivateRoute.jsx";
 import Profile from "./pages/User/Profile.jsx";
 import AdminPrivateRoute from "./components/AdminPrivateRoute.jsx";
 import UserList from "./pages/Admin/UserList.jsx";
+import CategoryList from "./pages/Admin/CategoryList.jsx";
 
 // Router Configuration
 const router = createBrowserRouter(
@@ -38,8 +39,8 @@ const router = createBrowserRouter(
       <Route path="/admin" element={<AdminPrivateRoute />}>
         {/* <Route path="dashboard" element={<AdminDashboard />} /> */}
         <Route path="userList" element={<UserList />} />
-        {/* <Route path="categorylist" element={<CategoryList />} />
-        <Route path="productlist" element={<ProductList />} />
+        <Route path="categoryList" element={<CategoryList />} />
+        {/* <Route path="productlist" element={<ProductList />} />
         <Route path="allproductslist" element={<AllProducts />} />
         <Route path="productlist/:pageNumber" element={<ProductList />} />
         <Route path="product/update/:_id" element={<ProductUpdate />} />

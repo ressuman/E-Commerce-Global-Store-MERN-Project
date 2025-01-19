@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
-const { ObjectId } = mongoose.Schema;
+const { Schema, model, Types } = mongoose;
 
-const reviewSchema = mongoose.Schema(
+const reviewSchema = new Schema(
   {
     name: {
       type: String,
@@ -11,6 +11,8 @@ const reviewSchema = mongoose.Schema(
     rating: {
       type: Number,
       required: true,
+      min: [1, "Rating must be at least 1"],
+      max: [5, "Rating must not exceed 5"],
     },
     comment: {
       type: String,
@@ -18,7 +20,7 @@ const reviewSchema = mongoose.Schema(
       trim: true,
     },
     user: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Types.ObjectId,
       required: true,
       ref: "User",
     },
@@ -26,7 +28,7 @@ const reviewSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-const productSchema = mongoose.Schema(
+const productSchema = new Schema(
   {
     name: {
       type: String,
@@ -40,14 +42,14 @@ const productSchema = mongoose.Schema(
     brand: {
       type: String,
       required: true,
-      trim: true,
     },
     quantity: {
       type: Number,
       required: true,
+      min: [0, "Quantity cannot be negative"],
     },
     category: {
-      type: ObjectId,
+      type: Types.ObjectId,
       ref: "Category",
       required: true,
     },
@@ -56,31 +58,38 @@ const productSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
-    reviews: [reviewSchema],
+    reviews: {
+      type: [reviewSchema],
+      default: [],
+    },
     rating: {
       type: Number,
-      required: true,
       default: 0,
+      min: [0, "Rating cannot be negative"],
+      required: true,
     },
     numReviews: {
       type: Number,
-      required: true,
       default: 0,
+      min: [0, "Cannot be negative"],
+      required: true,
     },
     price: {
       type: Number,
       required: true,
       default: 0,
+      min: [0, "Price cannot be negative"],
     },
     countInStock: {
       type: Number,
       required: true,
       default: 0,
+      min: [0, "Count in stock cannot be negative"],
     },
   },
   { timestamps: true }
 );
 
-const Product = mongoose.model("Product", productSchema);
+const Product = model("Product", productSchema);
 
 export default Product;

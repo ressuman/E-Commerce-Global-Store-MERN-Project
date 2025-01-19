@@ -29,6 +29,11 @@ export default function Navigation() {
     setDropdownOpen(!dropdownOpen);
   };
 
+  const handleMouseLeave = () => {
+    // Close dropdown when leaving hover-triggered space
+    setDropdownOpen(false);
+  };
+
   // const toggleSidebar = () => {
   //   setShowSidebar(!showSidebar);
   // };
@@ -57,6 +62,7 @@ export default function Navigation() {
       className={`${
         showSidebar ? "hidden" : "flex"
       } xl:flex lg:flex md:hidden sm:hidden flex-col justify-between p-4 text-white bg-[#000] w-[8%] hover:w-[15%] h-screen fixed`}
+      onMouseLeave={handleMouseLeave}
       id="navigation-container"
     >
       {/* Navigation Links */}
@@ -144,7 +150,7 @@ export default function Navigation() {
         {/* Dropdown Menu */}
         {dropdownOpen && userInfo && (
           <ul
-            className={`absolute right-0 mt-2 space-y-2 bg-white text-gray-600 hover:text-gray-950 ${
+            className={`absolute right-0 mt-1 space-y-2 bg-white text-gray-600 hover:text-gray-950 ${
               !userInfo.isAdmin ? "-top-20" : "-top-80"
             }`}
           >
@@ -153,7 +159,7 @@ export default function Navigation() {
                 <li>
                   <Link
                     to="/admin/dashboard"
-                    className="block px-4 py-2 hover:bg-gray-100"
+                    className="block px-4 py-2 w-full hover:bg-gray-500"
                   >
                     Dashboard
                   </Link>
@@ -161,7 +167,7 @@ export default function Navigation() {
                 <li>
                   <Link
                     to="/admin/productList"
-                    className="block px-4 py-2 hover:bg-gray-100"
+                    className="block px-4 py-2 w-full hover:bg-gray-500"
                   >
                     Products
                   </Link>
@@ -169,15 +175,15 @@ export default function Navigation() {
                 <li>
                   <Link
                     to="/admin/categoryList"
-                    className="block px-4 py-2 hover:bg-gray-100"
+                    className="block px-4 py-2 w-full hover:bg-gray-500"
                   >
-                    Category
+                    Categories
                   </Link>
                 </li>
                 <li>
                   <Link
                     to="/admin/orderList"
-                    className="block px-4 py-2 hover:bg-gray-100"
+                    className="block px-4 py-2 w-full hover:bg-gray-500"
                   >
                     Orders
                   </Link>
@@ -185,7 +191,7 @@ export default function Navigation() {
                 <li>
                   <Link
                     to="/admin/userList"
-                    className="block px-4 py-2 hover:bg-gray-100"
+                    className="block px-4 py-2 w-full hover:bg-gray-500"
                   >
                     Users
                   </Link>
@@ -196,7 +202,7 @@ export default function Navigation() {
             <li>
               <Link
                 to="/profile"
-                className="block px-4 py-2 hover:bg-gray-500 hover:text-white"
+                className="block px-4 py-2 w-full hover:bg-gray-500 hover:text-white"
               >
                 Profile
               </Link>
@@ -204,7 +210,7 @@ export default function Navigation() {
             <li>
               <button
                 onClick={logoutHandler}
-                className="block px-4 py-2 text-left hover:bg-gray-500 hover:text-white"
+                className="block px-4 py-2 text-left w-full hover:bg-gray-500 hover:text-white"
               >
                 Logout
               </button>

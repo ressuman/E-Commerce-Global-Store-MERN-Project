@@ -219,7 +219,7 @@ export default function UserList() {
 
   return (
     <div className="p-4 ml-16">
-      <h1 className="text-2xl font-semibold mb-4 text-center">Users</h1>
+      <h1 className="text-4xl font-semibold mb-4 text-center">Users</h1>
       {content}
     </div>
   );
