@@ -1,5 +1,5 @@
 // Packages
-//import path from "path";
+import path from "path";
 import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -13,7 +13,7 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
-// import uploadRoutes from "./routes/uploadRoutes.js";
+import uploadRoutes from "./routes/uploadRoutes.js";
 // import orderRoutes from "./routes/orderRoutes.js";
 import { errorHandler, notFound } from "./middlewares/errorNotFound.js";
 
@@ -48,7 +48,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/products", productRoutes);
-// app.use("/api/v1/upload", uploadRoutes);
+app.use("/api/v1/media", uploadRoutes);
 // app.use("/api/v1/orders", orderRoutes);
 
 // app.get("/api/v1/config/paypal", (req, res) => {
@@ -56,8 +56,8 @@ app.use("/api/v1/products", productRoutes);
 // });
 
 // Static Files
-// const __dirname = path.resolve();
-// app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+const __dirname = path.resolve();
+app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 
 // Error Handling Middleware
 app.use(notFound);

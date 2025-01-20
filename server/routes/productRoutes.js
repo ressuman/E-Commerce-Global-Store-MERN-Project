@@ -1,4 +1,5 @@
 import express from "express";
+import formidable from "express-formidable";
 
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
 
@@ -7,8 +8,8 @@ import {
   addProductReview,
   fetchAllProducts,
   fetchNewProducts,
+  fetchPaginatedProducts,
   fetchProductById,
-  fetchProducts,
   fetchTopProducts,
   filterProducts,
   removeProduct,
@@ -19,7 +20,7 @@ import checkId from "../middlewares/checkId.js";
 
 const router = express.Router();
 
-router.get("/fetch-products/search", fetchProducts);
+router.get("/fetch-products/search", fetchPaginatedProducts);
 
 router.get("/get-all-products", fetchAllProducts);
 
@@ -29,7 +30,13 @@ router.get("/get-top-products", fetchTopProducts);
 
 router.get("/get-product/:productId", fetchProductById);
 
-router.post("/add-product", authenticate, authorizeAdmin, addProduct);
+router.post(
+  "/add-product",
+  authenticate,
+  authorizeAdmin,
+  formidable(),
+  addProduct
+);
 
 router.post(
   "/add-review/:productId/reviews",
@@ -44,6 +51,7 @@ router.put(
   "/update-product/:productId",
   authenticate,
   authorizeAdmin,
+  formidable(),
   updateProductDetails
 );
 
