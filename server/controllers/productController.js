@@ -6,61 +6,14 @@ import Category from "../models/categoryModel.js";
 // Add a new product
 const addProduct = asyncHandler(async (req, res) => {
   try {
-    const {
-      name,
-      description,
-      price,
-      category,
-      quantity,
-      brand,
-      countInStock,
-    } = req.fields;
+    const { name, description, price, category, quantity, brand } = req.fields;
 
-    // Validation
     // Validation for required fields
     if (!name || !brand || !description || !price || !category || !quantity) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    // Validate numeric fields
-    const priceValue = parseFloat(price);
-    const quantityValue = parseInt(quantity, 10);
-    const countInStockValue = parseInt(countInStock || 0, 10);
-
-    if (isNaN(priceValue) || priceValue < 0) {
-      return res.status(400).json({ error: "Invalid price" });
-    }
-    if (isNaN(quantityValue) || quantityValue < 0) {
-      return res.status(400).json({ error: "Invalid quantity" });
-    }
-    if (isNaN(countInStockValue) || countInStockValue < 0) {
-      return res.status(400).json({ error: "Invalid count in stock" });
-    }
-
-    // Validate category ObjectId format
-    if (!mongoose.Types.ObjectId.isValid(category)) {
-      return res.status(400).json({ error: "Invalid category ID format" });
-    }
-
-    // Validate category existence
-    const categoryExists = await Category.findById(category);
-    if (!categoryExists) {
-      return res.status(400).json({ error: "Invalid category ID" });
-    }
-
-    // Handle image (placeholder logic, replace with actual file upload handling)
-    const image = req.files?.image || "default-image.jpg";
-
-    const product = new Product({
-      name,
-      description,
-      price: priceValue,
-      category,
-      quantity: quantityValue,
-      brand,
-      countInStock: countInStockValue,
-      image,
-    });
+    const product = new Product({ ...req.fields });
     await product.save();
 
     res.status(201).json(product);
@@ -73,75 +26,117 @@ const addProduct = asyncHandler(async (req, res) => {
 });
 
 // Update product details
+// const updateProductDetails = asyncHandler(async (req, res) => {
+//   try {
+//     //const { name, description, price, category, quantity, brand } = req.fields;
+//     //const { name, description, price, category, quantity, brand } = req.body;
+
+//     // // Validation
+//     // if (!name || !brand || !description || !price || !category || !quantity) {
+//     //   return res.status(400).json({ error: "All fields are required" });
+//     // }
+
+//     // const updateData = { name, description, price, category, quantity, brand };
+//     // if (req.file) {
+//     //   updateData.image = `/${req.file.path.replace(/\\/g, "/")}`;
+//     // }
+
+//     // const product = await Product.findByIdAndUpdate(
+//     //   req.params.productId,
+//     //   updateData,
+//     //   // { ...req.fields },
+//     //   { new: true }
+//     // );
+
+//     // if (!product) {
+//     //   return res.status(404).json({ error: "Product not found" });
+//     // }
+
+//     const { productId } = req.params;
+
+//     const { name, description, price, category, quantity, brand } = req.fields;
+//     const { image } = req.files;
+
+//     if (!name || !brand || !description || !price || !category || !quantity) {
+//       return res.status(400).json({ error: "All fields are required" });
+//     }
+
+//     if (!productId) {
+//       return res.status(400).json({ error: "Product ID is required" });
+//     }
+
+//     // const updatedFields = req.body; // Use req.body if parsed correctly
+//     // const product = await Product.findByIdAndUpdate(
+//     //   productId,
+//     //   updatedFields,
+//     //   { new: true } // Return updated product
+//     // );
+//     const updateData = {
+//       name,
+//       description,
+//       price,
+//       category,
+//       quantity,
+//       brand,
+//     };
+
+//     // If an image is provided, handle the file and update the path
+//     if (image) {
+//       const imagePath = `/uploads/${image.newFilename}`;
+//       updateData.image = imagePath;
+//     }
+
+//     const product = await Product.findByIdAndUpdate(productId, updateData, {
+//       new: true,
+//     });
+
+//     if (!product) {
+//       return res.status(404).json({ error: "Product not found" });
+//     }
+
+//     await product.save();
+
+//     res.json(product);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(400).json({ error: error.message });
+//   }
+// });
 const updateProductDetails = asyncHandler(async (req, res) => {
   try {
-    const {
-      name,
-      description,
-      price,
-      category,
-      quantity,
-      brand,
-      countInStock,
-    } = req.fields;
+    const { productId } = req.params;
 
-    // Validation
-    if (!name || !brand || !description || !price || !category || !quantity) {
-      return res.status(400).json({ error: "All fields are required" });
+    if (!productId) {
+      return res.status(400).json({ error: "Product ID is required" });
     }
 
-    const product = await Product.findById(req.params.productId);
+    const updatedFields = { ...req.body };
+
+    // Check for an uploaded file
+    if (req.file) {
+      updatedFields.image = `/${req.file.path.replace(/\\/g, "/")}`; // Set the file path
+    }
+    if (!req.file && req.body.existingImage) {
+      updatedFields.image = req.body.existingImage;
+    }
+
+    const product = await Product.findByIdAndUpdate(
+      productId,
+      updatedFields,
+      { new: true } // Return the updated product
+    );
+
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    const priceValue = parseFloat(price);
-    const quantityValue = parseInt(quantity, 10);
-    const countInStockValue = parseInt(
-      countInStock || product.countInStock,
-      10
-    );
-
-    if (isNaN(priceValue) || priceValue < 0) {
-      return res.status(400).json({ error: "Invalid price" });
-    }
-    if (isNaN(quantityValue) || quantityValue < 0) {
-      return res.status(400).json({ error: "Invalid quantity" });
-    }
-    if (isNaN(countInStockValue) || countInStockValue < 0) {
-      return res.status(400).json({ error: "Invalid count in stock" });
-    }
-
-    // Validate category ObjectId format
-    if (!mongoose.Types.ObjectId.isValid(category)) {
-      return res.status(400).json({ error: "Invalid category ID format" });
-    }
-
-    // Validate category existence
-    const categoryExists = await Category.findById(category);
-    if (!categoryExists) {
-      return res.status(400).json({ error: "Invalid category ID" });
-    }
-
-    // Handle image update (placeholder logic, replace with actual file upload handling)
-    const image = req.files?.image || product.image;
-
-    Object.assign(product, {
-      name,
-      description,
-      price: priceValue,
-      category,
-      quantity: quantityValue,
-      brand,
-      countInStock: countInStockValue,
-      image,
-    });
-    await product.save();
+    console.log("File:", req.file);
+    console.log("Body:", req.body);
 
     res.json(product);
   } catch (error) {
-    console.error(error);
-    res.status(400).json({ error: error.message });
+    console.error("Error updating product:", error);
+    res.status(500).json({ error: "Update failed", message: error.message });
   }
 });
 

@@ -11,21 +11,32 @@ export const productsAndUploadApiSlice = apiSlice.injectEndpoints({
       }),
       keepUnusedDataFor: 60,
       providesTags: ["Product"],
+      onQueryStarted: async ({ keyword }, { queryFulfilled }) => {
+        try {
+          const result = await queryFulfilled;
+          console.log(
+            `Fetched paginated products with keyword: "${keyword}"`,
+            result
+          );
+        } catch (error) {
+          console.error("Error fetching paginated products:", error);
+        }
+      },
     }),
-
-    // Fetch product details by ID
-    // getProductById: builder.query({
-    //   query: (productId) => `${PRODUCT_URL}/${productId}`,
-    //   providesTags: (result, error, productId) => [
-    //     { type: "Product", id: productId },
-    //   ],
-    // }),
 
     // Fetch all products (no filters)
     getAllProducts: builder.query({
       query: () => `${PRODUCT_URL}/get-all-products`,
       providesTags: ["Product"],
       keepUnusedDataFor: 60,
+      onQueryStarted: async (_, { queryFulfilled }) => {
+        try {
+          const result = await queryFulfilled;
+          console.log("Fetched all products:", result);
+        } catch (error) {
+          console.error("Error fetching all products:", error);
+        }
+      },
     }),
 
     // Fetch product details by ID
@@ -37,6 +48,17 @@ export const productsAndUploadApiSlice = apiSlice.injectEndpoints({
       providesTags: (result, error, productId) => [
         { type: "Product", id: productId },
       ],
+      onQueryStarted: async (productId, { queryFulfilled }) => {
+        try {
+          const result = await queryFulfilled;
+          console.log(`Fetched product details for ID: ${productId}`, result);
+        } catch (error) {
+          console.error(
+            `Error fetching product details for ID: ${productId}`,
+            error
+          );
+        }
+      },
     }),
 
     // Create a new product
@@ -47,6 +69,14 @@ export const productsAndUploadApiSlice = apiSlice.injectEndpoints({
         body: productData,
       }),
       invalidatesTags: ["Product"],
+      onQueryStarted: async (productData, { queryFulfilled }) => {
+        try {
+          const result = await queryFulfilled;
+          console.log("Product added successfully:", result);
+        } catch (error) {
+          console.error("Error adding product:", error);
+        }
+      },
     }),
 
     // Update an existing product
@@ -59,6 +89,17 @@ export const productsAndUploadApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (result, error, { productId }) => [
         { type: "Product", id: productId },
       ],
+      onQueryStarted: async ({ productId, formData }, { queryFulfilled }) => {
+        try {
+          const result = await queryFulfilled;
+          console.log(
+            `Product updated successfully for ID: ${productId}`,
+            result
+          );
+        } catch (error) {
+          console.error(`Error updating product for ID: ${productId}`, error);
+        }
+      },
     }),
 
     // Upload a product image
@@ -69,6 +110,15 @@ export const productsAndUploadApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
       invalidatesTags: ["Product", "Upload"],
+      onQueryStarted: async (data, { queryFulfilled }) => {
+        console.log("Uploading image...");
+        try {
+          const result = await queryFulfilled;
+          console.log("Image uploaded successfully:", result);
+        } catch (error) {
+          console.error("Error uploading image:", error);
+        }
+      },
     }),
 
     // Delete a product by ID
@@ -80,6 +130,17 @@ export const productsAndUploadApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (result, error, productId) => [
         { type: "Product", id: productId },
       ],
+      onQueryStarted: async (productId, { queryFulfilled }) => {
+        try {
+          const result = await queryFulfilled;
+          console.log(
+            `Product deleted successfully for ID: ${productId}`,
+            result
+          );
+        } catch (error) {
+          console.error(`Error deleting product for ID: ${productId}`, error);
+        }
+      },
     }),
 
     // Create a product review
@@ -92,6 +153,17 @@ export const productsAndUploadApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (result, error, data) => [
         { type: "Product", id: data.productId },
       ],
+      onQueryStarted: async (data, { queryFulfilled }) => {
+        try {
+          const result = await queryFulfilled;
+          console.log(`Review added for product ID: ${data.productId}`, result);
+        } catch (error) {
+          console.error(
+            `Error adding review for product ID: ${data.productId}`,
+            error
+          );
+        }
+      },
     }),
 
     // Fetch top-rated products
@@ -99,6 +171,14 @@ export const productsAndUploadApiSlice = apiSlice.injectEndpoints({
       query: () => `${PRODUCT_URL}/get-top-products`,
       keepUnusedDataFor: 60,
       providesTags: ["Product"],
+      onQueryStarted: async (_, { queryFulfilled }) => {
+        try {
+          const result = await queryFulfilled;
+          console.log("Fetched top-rated products:", result);
+        } catch (error) {
+          console.error("Error fetching top-rated products:", error);
+        }
+      },
     }),
 
     // Fetch newly added products
@@ -106,6 +186,14 @@ export const productsAndUploadApiSlice = apiSlice.injectEndpoints({
       query: () => `${PRODUCT_URL}/fetch-new-products`,
       keepUnusedDataFor: 60,
       providesTags: ["Product"],
+      onQueryStarted: async (_, { queryFulfilled }) => {
+        try {
+          const result = await queryFulfilled;
+          console.log("Fetched newly added products:", result);
+        } catch (error) {
+          console.error("Error fetching newly added products:", error);
+        }
+      },
     }),
 
     // Fetch filtered products
@@ -117,6 +205,14 @@ export const productsAndUploadApiSlice = apiSlice.injectEndpoints({
       }),
       providesTags: ["Product"],
       keepUnusedDataFor: 60,
+      onQueryStarted: async ({ checked, radio }, { queryFulfilled }) => {
+        try {
+          const result = await queryFulfilled;
+          console.log("Fetched filtered products:", result);
+        } catch (error) {
+          console.error("Error fetching filtered products:", error);
+        }
+      },
     }),
   }),
 });

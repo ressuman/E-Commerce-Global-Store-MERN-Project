@@ -51,7 +51,7 @@ router.put(
   "/update-product/:productId",
   authenticate,
   authorizeAdmin,
-  formidable(),
+  //formidable(),
   updateProductDetails
 );
 

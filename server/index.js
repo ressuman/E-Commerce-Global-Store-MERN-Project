@@ -57,7 +57,8 @@ app.use("/api/v1/media", uploadRoutes);
 
 // Static Files
 const __dirname = path.resolve();
-app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+//app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Error Handling Middleware
 app.use(notFound);
