@@ -1,5 +1,5 @@
 import express from "express";
-import formidable from "express-formidable";
+//import formidable from "express-formidable";
 
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
 
@@ -34,7 +34,7 @@ router.post(
   "/add-product",
   authenticate,
   authorizeAdmin,
-  formidable(),
+  //formidable(),
   addProduct
 );
 

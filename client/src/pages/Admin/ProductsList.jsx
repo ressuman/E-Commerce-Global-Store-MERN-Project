@@ -38,29 +38,34 @@ export default function ProductsList() {
     setIsSubmitting(true);
 
     try {
-      const productData = new FormData();
-      productData.append("image", image);
-      productData.append("name", name);
-      productData.append("description", description);
-      productData.append("price", price);
-      productData.append("category", category);
-      productData.append("quantity", quantity);
-      productData.append("brand", brand);
-      productData.append("countInStock", stock);
+      // const productData = new FormData();
+      // productData.append("image", image);
+      // productData.append("name", name);
+      // productData.append("description", description);
+      // productData.append("price", price);
+      // productData.append("category", category);
+      // productData.append("quantity", quantity);
+      // productData.append("brand", brand);
+      // productData.append("countInStock", stock);
 
-      const response = await createProduct(productData);
+      const productData = {
+        name,
+        description,
+        price: Number(price),
+        category,
+        quantity: Number(quantity),
+        brand,
+        countInStock: Number(stock),
+        image: imageUrl, // Use the Cloudinary URL from state
+      };
 
-      if (response?.data?.error) {
-        toast.error("Product creation failed. Please try again.");
-      } else {
-        toast.success(`${response.data.name} is created successfully.`);
-        setTimeout(() => navigate("/"), 1000); // Allow success message to display
-      }
+      const response = await createProduct(productData).unwrap();
+
+      toast.success(`${response.name} is created successfully.`);
+      setTimeout(() => navigate("/"), 1000);
     } catch (error) {
       console.error("Error creating product:", error);
-      toast.error(
-        error?.response?.data?.message || "Product creation failed. Try again."
-      );
+      toast.error(error?.data?.error || "Product creation failed. Try again.");
     } finally {
       setIsSubmitting(false);
     }

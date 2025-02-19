@@ -50,62 +50,55 @@ export default function ProductsUpdate() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Basic validation
+    if (!name || !description || !price || !category || !image) {
+      toast.error("All fields including image are required");
+      return;
+    }
+
     setIsUpdating(true);
 
     try {
-      const formData = new FormData();
+      const productUpdateData = {
+        name,
+        description,
+        price: Number(price),
+        category,
+        quantity: Number(quantity),
+        brand,
+        countInStock: Number(stock),
+        image, // Cloudinary URL from state
+      };
 
-      formData.append("name", name);
-      formData.append("description", description);
-      formData.append("price", price);
-      formData.append("category", category);
-      formData.append("quantity", quantity);
-      formData.append("brand", brand);
-      formData.append("countInStock", stock);
-
-      // Only append a new file if the user has selected one
-      if (image && typeof image !== "string") {
-        formData.append("image", image);
-      } else if (image && typeof image === "string") {
-        formData.append("existingImage", image); // Append existing image path for reference
-      }
-      for (const [key, value] of formData.entries()) {
-        console.log(`${key}:`, value);
-      }
-
-      // const { data } = await updateProduct({
-      //   productId: params._id,
-      //   formData,
-      // }).unwrap();
-      // console.log(data);
       const response = await updateProduct({
         productId: params._id,
-        formData,
+        updatedData: productUpdateData,
       }).unwrap();
-      console.log("Updated product:", response);
-      toast.success(`${response.name} updated successfully.`);
 
-      setTimeout(() => navigate("/admin/allProductsList"), 1000);
+      toast.success(`${response.name} updated successfully!`);
+      setTimeout(() => navigate("/admin/allProductsList"), 1500);
     } catch (err) {
-      toast.error(`Failed to update.`);
-      console.log(err);
+      console.error("Update error:", err);
+      toast.error(err?.data?.message || "Update failed");
     } finally {
       setIsUpdating(false);
     }
   };
 
   const uploadFileHandler = async (e) => {
-    const formData = new FormData();
-    formData.append("image", e.target.files[0]);
+    const file = e.target.files[0];
+    if (!file) return;
 
     try {
-      const res = await uploadProductImage(formData).unwrap();
+      const formData = new FormData();
+      formData.append("image", file);
 
-      toast.success("Image uploaded successfully.");
-      setImage(res.image);
+      const res = await uploadProductImage(formData).unwrap();
+      setImage(res.image); // Set Cloudinary URL
+      toast.success("Image uploaded successfully");
     } catch (err) {
-      toast.error("Image upload failed.");
-      console.log(err);
+      console.error("Upload error:", err);
+      toast.error(err?.data?.message || "Image upload failed");
     }
   };
 
@@ -134,7 +127,7 @@ export default function ProductsUpdate() {
 
         <div className="md:w-3/4 p-3 ml-24">
           <h1 className="h-12 text-4xl font-semibold mb-4 text-center">
-            Create Product
+            Update Product
           </h1>
 
           {image && (

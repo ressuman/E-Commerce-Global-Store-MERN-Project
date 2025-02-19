@@ -1,5 +1,5 @@
 // Packages
-import path from "path";
+//import path from "path";
 import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -55,10 +55,10 @@ app.use("/api/v1/media", uploadRoutes);
 //   res.send({ clientId: process.env.PAYPAL_CLIENT_ID });
 // });
 
-// Static Files
-const __dirname = path.resolve();
-//app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// // Static Files
+// const __dirname = path.resolve();
+// //app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Error Handling Middleware
 app.use(notFound);

@@ -11,3 +11,25 @@ input,
 textarea {
   color: #000;
 }
+
+/* src/styles/lazy-load.css */
+/* .lazy-load-image-wrapper {
+  display: block !important;
+  overflow: hidden;
+  position: relative;
+}
+
+.lazy-load-image-wrapper img {
+  transition: filter 0.3s ease-in-out;
+}
+
+.lazy-load-image-wrapper.blur {
+  filter: blur(15px);
+}
+
+.lazy-load-image-wrapper.blur::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.5);
+} */

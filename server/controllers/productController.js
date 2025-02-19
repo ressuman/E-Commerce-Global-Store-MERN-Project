@@ -6,14 +6,23 @@ import Category from "../models/categoryModel.js";
 // Add a new product
 const addProduct = asyncHandler(async (req, res) => {
   try {
-    const { name, description, price, category, quantity, brand } = req.fields;
+    const { name, description, price, category, quantity, brand, image } =
+      req.body;
 
     // Validation for required fields
-    if (!name || !brand || !description || !price || !category || !quantity) {
+    if (
+      !name ||
+      !brand ||
+      !description ||
+      !price ||
+      !category ||
+      !quantity ||
+      !image
+    ) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    const product = new Product({ ...req.fields });
+    const product = new Product({ ...req.body });
     await product.save();
 
     res.status(201).json(product);
@@ -102,41 +111,68 @@ const addProduct = asyncHandler(async (req, res) => {
 //     res.status(400).json({ error: error.message });
 //   }
 // });
+// const updateProductDetails = asyncHandler(async (req, res) => {
+//   try {
+//     const { productId } = req.params;
+
+//     if (!productId) {
+//       return res.status(400).json({ error: "Product ID is required" });
+//     }
+
+//     const updatedFields = { ...req.body };
+
+//     // Check for an uploaded file
+//     if (req.file) {
+//       updatedFields.image = `/${req.file.path.replace(/\\/g, "/")}`; // Set the file path
+//     }
+//     if (!req.file && req.body.existingImage) {
+//       updatedFields.image = req.body.existingImage;
+//     }
+
+//     const product = await Product.findByIdAndUpdate(
+//       productId,
+//       updatedFields,
+//       { new: true } // Return the updated product
+//     );
+
+//     if (!product) {
+//       return res.status(404).json({ error: "Product not found" });
+//     }
+
+//     console.log("File:", req.file);
+//     console.log("Body:", req.body);
+
+//     res.json(product);
+//   } catch (error) {
+//     console.error("Error updating product:", error);
+//     res.status(500).json({ error: "Update failed", message: error.message });
+//   }
+// });
 const updateProductDetails = asyncHandler(async (req, res) => {
   try {
     const { productId } = req.params;
-
-    if (!productId) {
-      return res.status(400).json({ error: "Product ID is required" });
-    }
-
-    const updatedFields = { ...req.body };
-
-    // Check for an uploaded file
-    if (req.file) {
-      updatedFields.image = `/${req.file.path.replace(/\\/g, "/")}`; // Set the file path
-    }
-    if (!req.file && req.body.existingImage) {
-      updatedFields.image = req.body.existingImage;
-    }
+    const { image, ...otherFields } = req.body;
 
     const product = await Product.findByIdAndUpdate(
       productId,
-      updatedFields,
-      { new: true } // Return the updated product
+      {
+        ...otherFields,
+        image, // Use updated Cloudinary URL
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
     );
 
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    console.log("File:", req.file);
-    console.log("Body:", req.body);
-
     res.json(product);
   } catch (error) {
     console.error("Error updating product:", error);
-    res.status(500).json({ error: "Update failed", message: error.message });
+    res.status(500).json({ error: "Update failed" });
   }
 });
 
@@ -218,7 +254,7 @@ const fetchAllProducts = asyncHandler(async (req, res) => {
   try {
     const products = await Product.find({})
       .populate("category", "name")
-      .limit(12)
+      //.limit(12)
       .sort({ createdAt: -1 });
 
     if (!products.length) {

@@ -81,15 +81,18 @@ export const productsAndUploadApiSlice = apiSlice.injectEndpoints({
 
     // Update an existing product
     updateProductById: builder.mutation({
-      query: ({ productId, formData }) => ({
+      query: ({ productId, updatedData }) => ({
         url: `${PRODUCT_URL}/update-product/${productId}`,
         method: "PUT",
-        body: formData,
+        body: updatedData,
       }),
       invalidatesTags: (result, error, { productId }) => [
         { type: "Product", id: productId },
       ],
-      onQueryStarted: async ({ productId, formData }, { queryFulfilled }) => {
+      onQueryStarted: async (
+        { productId, updatedData },
+        { queryFulfilled }
+      ) => {
         try {
           const result = await queryFulfilled;
           console.log(
