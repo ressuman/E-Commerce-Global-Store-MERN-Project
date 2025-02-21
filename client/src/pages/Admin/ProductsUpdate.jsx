@@ -76,10 +76,12 @@ export default function ProductsUpdate() {
       }).unwrap();
 
       toast.success(`${response.name} updated successfully!`);
-      setTimeout(() => navigate("/admin/allProductsList"), 1500);
+      setTimeout(() => navigate("/admin/allProductsList"), 1000);
     } catch (err) {
       console.error("Update error:", err);
-      toast.error(err?.data?.message || "Update failed");
+      toast.error(
+        err?.data?.message || "Product update failed. Please try again."
+      );
     } finally {
       setIsUpdating(false);
     }
@@ -87,7 +89,9 @@ export default function ProductsUpdate() {
 
   const uploadFileHandler = async (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     try {
       const formData = new FormData();
@@ -95,7 +99,7 @@ export default function ProductsUpdate() {
 
       const res = await uploadProductImage(formData).unwrap();
       setImage(res.image); // Set Cloudinary URL
-      toast.success("Image uploaded successfully");
+      toast.success("Product image uploaded successfully");
     } catch (err) {
       console.error("Upload error:", err);
       toast.error(err?.data?.message || "Image upload failed");
@@ -287,7 +291,7 @@ export default function ProductsUpdate() {
             <div className="flex justify-between">
               <button
                 type="submit"
-                className={`py-4 px-10 mt-5 rounded-lg text-lg font-bold bg-pink-600 hover:bg-pink-700 ${
+                className={`py-4 px-10 mt-5 rounded-lg text-lg font-bold bg-green-600 hover:bg-green-700 ${
                   isUpdating ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 disabled={isUpdating}

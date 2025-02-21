@@ -22,6 +22,11 @@ const addProduct = asyncHandler(async (req, res) => {
       return res.status(400).json({ error: "All fields are required" });
     }
 
+    // Validate category (ensure it's a valid ObjectId)
+    if (!mongoose.Types.ObjectId.isValid(category)) {
+      return res.status(400).json({ error: "Invalid category ID" });
+    }
+
     const product = new Product({ ...req.body });
     await product.save();
 
@@ -153,6 +158,14 @@ const updateProductDetails = asyncHandler(async (req, res) => {
     const { productId } = req.params;
     const { image, ...otherFields } = req.body;
 
+    // Validate category (if provided)
+    if (
+      otherFields.category &&
+      !mongoose.Types.ObjectId.isValid(otherFields.category)
+    ) {
+      return res.status(400).json({ error: "Invalid category ID" });
+    }
+
     const product = await Product.findByIdAndUpdate(
       productId,
       {
@@ -163,7 +176,7 @@ const updateProductDetails = asyncHandler(async (req, res) => {
         new: true,
         runValidators: true,
       }
-    );
+    ).populate("category", "name");
 
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
@@ -213,6 +226,7 @@ const fetchPaginatedProducts = asyncHandler(async (req, res) => {
 
     // Fetch paginated products
     const products = await Product.find({ ...keyword })
+      .populate("category", "name")
       .limit(pageSize) // Restrict to the current page size
       .skip(pageSize * (page - 1)) // Skip products from previous pages
       .sort({ createdAt: -1 }); // Sort by newest first
@@ -325,7 +339,10 @@ const addProductReview = asyncHandler(async (req, res) => {
 // Fetch top-rated products
 const fetchTopProducts = asyncHandler(async (req, res) => {
   try {
-    const products = await Product.find({}).sort({ rating: -1 }).limit(4);
+    const products = await Product.find({})
+      .populate("category", "name")
+      .sort({ rating: -1 })
+      .limit(4);
     res.json(products);
   } catch (error) {
     console.error(error);
@@ -336,7 +353,10 @@ const fetchTopProducts = asyncHandler(async (req, res) => {
 // Fetch newly added products
 const fetchNewProducts = asyncHandler(async (req, res) => {
   try {
-    const products = await Product.find().sort({ _id: -1 }).limit(5);
+    const products = await Product.find({})
+      .populate("category", "name")
+      .sort({ _id: -1 })
+      .limit(5);
     res.json(products);
   } catch (error) {
     console.error(error);

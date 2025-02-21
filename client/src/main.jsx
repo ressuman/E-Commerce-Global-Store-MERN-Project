@@ -16,6 +16,9 @@ import CategoryList from "./pages/Admin/CategoryList.jsx";
 import ProductsList from "./pages/Admin/ProductsList.jsx";
 import ProductsUpdate from "./pages/Admin/ProductsUpdate.jsx";
 import AllProducts from "./pages/Admin/AllProducts.jsx";
+import Home from "./pages/Public/Home.jsx";
+import Cart from "./pages/Public/Cart.jsx";
+import Shop from "./pages/Public/Shop.jsx";
 
 // Router Configuration
 const router = createBrowserRouter(
@@ -24,11 +27,11 @@ const router = createBrowserRouter(
       {/* Public Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      {/* <Route index element={<Home />} />
-      <Route path="/favorite" element={<Favorites />} />
-      <Route path="/product/:id" element={<ProductDetails />} />
+      <Route index element={<Home />} />
+      {/* <Route path="/favorite" element={<Favorites />} />
+      <Route path="/product/:id" element={<ProductDetails />} /> */}
       <Route path="/cart" element={<Cart />} />
-      <Route path="/shop" element={<Shop />} /> */}
+      <Route path="/shop" element={<Shop />} />
 
       {/* Protected Routes for Registered Users */}
       <Route path="" element={<PrivateRoute />}>

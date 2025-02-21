@@ -48,11 +48,11 @@ export default function AllProducts() {
   }
 
   return (
-    <div className="container ml-48">
-      <div className="mx-auto">
-        <div className="flex flex-col md:flex-row">
-          <div className="p-3">
-            <h1 className="font-bold h-12 text-4xl mb-4 text-center">
+    <div className="container">
+      <div className="ml-[15%] mr-[2%] mt-4">
+        <div className="flex">
+          <div className="flex-1">
+            <h1 className="font-bold h-12 text-4xl mb-10 text-center">
               All Products ({products?.length || 0})
             </h1>
             <InfiniteScroll
@@ -66,39 +66,36 @@ export default function AllProducts() {
                 </p>
               }
             >
-              <div className="flex flex-wrap justify-around items-center">
-                {products?.length === 0 ? (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {displayedProducts?.length === 0 ? (
                   <h2 className="text-center text-red-500">
                     No products found. Please add some products.button
                   </h2>
                 ) : (
-                  products?.map((product) => (
+                  displayedProducts?.map((product) => (
                     <Link
                       key={product._id}
                       to={`/admin/product/update/${product._id}`}
-                      className="block mb-4 overflow-hidden hover:shadow-2xl transition-shadow duration-200"
+                      className="block mb-4 overflow-hidden hover:shadow-2xl transition-shadow duration-200 rounded-lg w-full"
                     >
-                      <div className="flex">
-                        <LazyLoadImage
-                          src={product.image || "/placeholder.png"}
-                          alt={product.name}
-                          className="w-40 h-40 object-cover rounded-lg"
-                          effect="blur"
-                          placeholderSrc={PLACEHOLDER_IMAGE}
-                          threshold={100}
-                          //wrapperClassName="lazy-load-image-wrapper"
-                        />
-                        {/* <img
-                          src={product.image || "/placeholder.png"}
-                          alt={product.name || "Product Image"}
-                          className="w-[10rem] object-cover"
-                        /> */}
-                        <div className="p-4 flex flex-col justify-around">
-                          <div className="flex justify-between">
-                            <h5 className="text-xl font-semibold mb-2 truncate">
+                      <div className="flex gap-3 justify-center">
+                        <div className="w-[30%] mb-[-6px]">
+                          <LazyLoadImage
+                            src={product.image || "/placeholder.png"}
+                            alt={product.name}
+                            className="w-40 h-40 object-cover rounded-lg"
+                            effect="blur"
+                            placeholderSrc={PLACEHOLDER_IMAGE}
+                            threshold={100}
+                          />
+                        </div>
+
+                        <div className="w-[70%] flex flex-col justify-between pr-2">
+                          <div className="flex justify-between items-center gap-4">
+                            <h5 className="text-[1.25rem] font-semibold">
                               {product?.name || "Unnamed Product"}
                             </h5>
-                            <p className="text-gray-400 text-xs">
+                            <p className="text-gray-400 text-[0.75rem]">
                               {product.createdAt
                                 ? moment(product.createdAt).format(
                                     "MMMM Do YYYY"
@@ -106,43 +103,40 @@ export default function AllProducts() {
                                 : "Date not available"}
                             </p>
                           </div>
-                          <p className="text-gray-400 text-sm mb-4 xl:w-[30rem] lg:w-[30rem] md:w-[20rem] sm:w-[10rem]">
+                          <p className="text-gray-400 text-sm">
                             {product?.description
                               ? `${product.description.substring(0, 160)}...`
                               : "No description available."}
                           </p>
-                          <div className="flex justify-between items-center">
-                            <button
-                              // to={`/admin/product/update/${product._id}`}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                window.location.href = `/admin/product/update/${product._id}`;
-                              }}
-                              className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-pink-700 rounded-lg hover:bg-pink-800 focus:ring-4 focus:outline-none focus:ring-pink-300 dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800"
-                            >
-                              Update Product
-                              <svg
-                                className="w-3.5 h-3.5 ml-2"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 14 10"
+                          <div className="flex justify-between items-center gap-3">
+                            <div className="flex justify-between">
+                              <button
+                                // to={`/admin/product/update/${product._id}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.location.href = `/admin/product/update/${product._id}`;
+                                }}
+                                className="inline-flex items-center px-3 py-2 text-xs font-medium text-center text-white bg-pink-700 rounded-lg hover:bg-pink-800 focus:ring-4 focus:outline-none focus:ring-pink-300 dark:bg-pink-600 dark:hover:bg-pink-700 dark:focus:ring-pink-800"
                               >
-                                <path
-                                  stroke="currentColor"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M1 5h12m0 0L9 1m4 4L9 9"
-                                />
-                              </svg>
-                            </button>
-                            {/* <p className="text-lg font-bold text-pink-600">
-                              {new Intl.NumberFormat("en-US", {
-                                style: "currency",
-                                currency: "USD",
-                              }).format(product?.price) || "N/A"}
-                            </p> */}
+                                Update Product
+                                <svg
+                                  className="w-3.5 h-3.5 ml-2"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 14 10"
+                                >
+                                  <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M1 5h12m0 0L9 1m4 4L9 9"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
+
                             <div className="flex justify-between items-center gap-3">
                               <span className="text-lg font-bold text-pink-600">
                                 {new Intl.NumberFormat("en-US", {
@@ -169,7 +163,7 @@ export default function AllProducts() {
               </div>
             </InfiniteScroll>
           </div>
-          <div className="md:w-1/4 p-3 mt-2">
+          <div className="w-[13%] mt-2">
             <AdminMenu />
           </div>
         </div>
