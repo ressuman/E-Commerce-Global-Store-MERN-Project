@@ -3,11 +3,47 @@ import Header from "../../components/Header";
 import { useGetAllProductsQuery } from "../../redux/api/productsAndUploadApiSlice";
 import { Loader1 } from "../../components/Loader";
 import Message from "../../components/Message";
+import ProductsGrid from "../Products/ProductsGrid";
+import { useEffect, useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 export default function Home() {
   const { keyword } = useParams();
 
-  const { data, isLoading, isError } = useGetAllProductsQuery({ keyword });
+  const [displayedProducts, setDisplayedProducts] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
+
+  const { data = [], isLoading, isError } = useGetAllProductsQuery({ keyword });
+
+  const ITEMS_PER_PAGE = 12;
+
+  useEffect(() => {
+    if (data.length > 0) {
+      const endIndex = page * ITEMS_PER_PAGE;
+      const productsToShow = data.slice(0, endIndex);
+      setDisplayedProducts(productsToShow);
+      setHasMore(endIndex < data.length);
+    }
+  }, [page, data]);
+
+  const fetchMoreData = () => {
+    if (hasMore) {
+      setPage((prev) => prev + 1);
+    }
+  };
+
+  if (isLoading) {
+    return <Loader1 />;
+  }
+
+  if (isError || !data.length) {
+    return (
+      <div className="text-center text-red-500 p-6">
+        Failed to load products or no products found. Please try again later.
+      </div>
+    );
+  }
 
   return (
     <>
@@ -43,14 +79,27 @@ export default function Home() {
               </div>
 
               {/* Products Grid */}
-              <div className="flex justify-center flex-wrap mt-[2rem]">
-                {/* {data?.products?.map((product) => (
-                    <Product key={product._id} product={product} />
-                  ))} */}
-              </div>
+              <InfiniteScroll
+                dataLength={displayedProducts.length}
+                next={fetchMoreData}
+                hasMore={hasMore}
+                loader={<Loader1 />}
+                endMessage={
+                  <p className="text-center text-gray-500 py-4">
+                    You&#39;ve viewed all products
+                  </p>
+                }
+              >
+                {" "}
+                <div className="flex justify-center flex-wrap mt-[2rem] gap-8 ml-[11%] mr-[2%]">
+                  {data?.map((product) => (
+                    <ProductsGrid key={product._id} product={product} />
+                  ))}
+                </div>
+              </InfiniteScroll>
 
               {/* Empty State */}
-              {data?.products?.length === 0 && (
+              {data?.length === 0 && (
                 <div className="text-center py-12">
                   <p className="text-xl text-gray-600 mb-4">
                     No products found
