@@ -42,7 +42,7 @@ export default function ProductsCarousel() {
     );
   } else if (error) {
     content = (
-      <Message variant="danger">
+      <Message variant="error">
         {error?.data?.message || error.error || "Failed to load products"}
       </Message>
     );

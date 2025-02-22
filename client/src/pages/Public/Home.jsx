@@ -56,7 +56,7 @@ export default function Home() {
           return <Loader1 />;
         } else if (isError) {
           return (
-            <Message variant="danger">
+            <Message variant="error">
               {isError?.data?.message ||
                 isError.error ||
                 "Error loading products"}

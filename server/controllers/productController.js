@@ -305,9 +305,10 @@ const addProductReview = asyncHandler(async (req, res) => {
     );
 
     if (alreadyReviewed) {
-      return res
-        .status(400)
-        .json({ error: "You have already reviewed this product" });
+      return res.status(400).json({
+        error: "Already reviewed! You can only submit one review per product",
+        code: "DUPLICATE_REVIEW",
+      });
     }
 
     // Create a new review
@@ -331,8 +332,11 @@ const addProductReview = asyncHandler(async (req, res) => {
     await product.save();
     res.status(201).json({ message: "Review added" });
   } catch (error) {
-    console.error(error);
-    res.status(400).json({ error: error.message });
+    console.error("Review Error:", error);
+    res.status(400).json({
+      error: error.message || "Failed to submit review",
+      code: "REVIEW_ERROR",
+    });
   }
 });
 

@@ -13,6 +13,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useLogoutUserMutation } from "../../../redux/api/authApiSlice";
 import { logout } from "../../../redux/features/auth/authSlice";
 import { toast } from "react-toastify";
+import FavoritesCount from "../../Favorites/FavoritesCount";
 
 export default function Navigation() {
   const dispatch = useDispatch();
@@ -106,7 +107,8 @@ export default function Navigation() {
           className="flex items-center transition-transform transform hover:translate-x-2"
         >
           <FaHeart className="mr-2 mt-[3rem]" size={26} />
-          <span className="hidden nav-item-name mt-[3rem]">FAVORITES</span>
+          <span className="hidden nav-item-name mt-[3rem]">FAVORITES</span>{" "}
+          <FavoritesCount />
         </Link>
         {/* <Link to="/favorite" className="flex relative">
           <div className="flex items-center transition-transform transform hover:translate-x-2">

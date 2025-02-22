@@ -2,7 +2,7 @@ import HeartIcon from "../../components/HeartIcon";
 import { Link } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
-import { FaStar } from "react-icons/fa";
+import { FaComment, FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 export default function ProductsGrid({ product }) {
@@ -10,13 +10,16 @@ export default function ProductsGrid({ product }) {
 
   // Function to format the rating (round up to whole number if decimal)
   const formatRating = (rating) => {
-    return rating % 1 === 0 ? rating.toFixed(0) : Math.ceil(rating).toFixed(0);
+    return new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    }).format(rating);
   };
 
   // Function to format the review text
   const formatReviewText = (numReviews) => {
     if (numReviews === 0) {
-      return "No Review Yet";
+      return "No Reviews";
     }
     if (numReviews === 1) {
       return "1 review";
@@ -66,38 +69,85 @@ export default function ProductsGrid({ product }) {
         </Link>
         {/* Rating Component */}
         {/* Rating and Reviews */}
-        <div className="flex items-center mt-2 gap-2">
-          {/* Stars */}
-          <div className="flex">
-            {[...Array(5)].map((_, index) => (
-              <FaStar
-                key={index}
-                className={`text-${
-                  index < Math.round(rating)
-                    ? "yellow-400" // Yellow stars for filled rating
-                    : "gray-300" // White stars for unfilled rating
-                } text-sm`}
-              />
-            ))}
+
+        <div className="flex items-center justify-between mt-2">
+          <div className="flex items-center gap-2">
+            {/* Star Rating */}
+            <div
+              className="flex items-center"
+              aria-label={`Rating: ${rating} out of 5`}
+            >
+              {[...Array(5)].map((_, index) => {
+                const starValue = index + 1;
+                const clampedValue = Math.min(Math.max(rating, 0), 5);
+
+                return (
+                  <span key={index} className="ml-1">
+                    {clampedValue >= starValue ? (
+                      <FaStar className="text-yellow-400 w-4 h-4" />
+                    ) : clampedValue >= starValue - 0.5 ? (
+                      <FaStarHalfAlt className="text-yellow-400 w-4 h-4" />
+                    ) : (
+                      <FaRegStar className="text-gray-300 w-4 h-4" />
+                    )}
+                  </span>
+                );
+              })}
+            </div>
+
+            {/* Numeric Rating */}
+            <span className="text-gray-600 text-sm">
+              {formatRating(rating)}
+            </span>
           </div>
 
-          {/* Rating Number (always display, even if 0) */}
-          <span className="text-gray-600">{formatRating(rating)}</span>
-
-          {/* Review Text (always display, even if 0) */}
-          <span className="text-gray-600">
-            ({formatReviewText(numReviews)})
-          </span>
-
-          {/* View Details Button */}
-          <Link
-            to={`/product/${product._id}`}
-            className="ml-auto bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors duration-200"
-          >
-            View Details
-          </Link>
+          {/* Reviews Count */}
+          <div className="flex items-center gap-2">
+            <FaComment className="text-pink-500 w-4 h-4" />
+            <span className="text-gray-600 text-sm">
+              {formatReviewText(numReviews)}
+            </span>
+          </div>
         </div>
+
+        {/* View Details Button */}
+        <Link
+          to={`/product/${product._id}`}
+          className="mt-4 inline-block w-full text-center bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+        >
+          View Details
+        </Link>
       </div>
     </motion.div>
   );
 }
+
+//  <div className="flex items-center mt-2 gap-2">
+//    {/* Stars */}
+//    <div className="flex">
+//      {[...Array(5)].map((_, index) => (
+//        <FaStar
+//          key={index}
+//          className={`text-${
+//            index < Math.round(rating)
+//              ? "yellow-400" // Yellow stars for filled rating
+//              : "gray-300" // White stars for unfilled rating
+//          } text-sm`}
+//        />
+//      ))}
+//    </div>
+
+//    {/* Rating Number (always display, even if 0) */}
+//    <span className="text-gray-600">{formatRating(rating)}</span>
+
+//    {/* Review Text (always display, even if 0) */}
+//    <span className="text-gray-600">({formatReviewText(numReviews)})</span>
+
+//    {/* View Details Button */}
+//    <Link
+//      to={`/product/${product._id}`}
+//      className="ml-auto bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors duration-200"
+//    >
+//      View Details
+//    </Link>
+//  </div>;

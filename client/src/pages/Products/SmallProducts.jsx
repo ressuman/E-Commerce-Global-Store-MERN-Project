@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
+import HeartIcon from "../../components/HeartIcon";
 
 export default function SmallProducts({ product }) {
   const PLACEHOLDER_IMAGE =
@@ -22,7 +23,7 @@ export default function SmallProducts({ product }) {
           placeholderSrc={PLACEHOLDER_IMAGE}
           threshold={100}
         />
-        {/* <HeartIcon product={product} /> */}
+        <HeartIcon product={product} />
       </div>
 
       <div className="p-4">

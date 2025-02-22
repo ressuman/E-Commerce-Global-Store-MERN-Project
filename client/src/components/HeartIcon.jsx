@@ -12,6 +12,7 @@ import {
   removeFromFavorites,
   setFavorites,
 } from "../redux/features/favorites/favoritesSlice";
+import { toast } from "react-toastify";
 
 export default function HeartIcon({ product }) {
   const dispatch = useDispatch();
@@ -28,9 +29,25 @@ export default function HeartIcon({ product }) {
     if (isFavorite) {
       dispatch(removeFromFavorites(product));
       removeFavoriteFromLocalStorage(product._id);
+      toast.info(
+        `Removed "${product.name}" from favorites`
+        // {
+        //   position: "bottom-right",
+        //   autoClose: 2000,
+        //   hideProgressBar: true,
+        // }
+      );
     } else {
       dispatch(addToFavorites(product));
       addFavoriteToLocalStorage(product);
+      toast.success(
+        `Added "${product.name}" to favorites!`
+        // {
+        //   position: "bottom-right",
+        //   autoClose: 2000,
+        //   hideProgressBar: true,
+        // }
+      );
     }
   };
 
