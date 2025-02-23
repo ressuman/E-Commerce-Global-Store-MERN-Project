@@ -33,5 +33,9 @@ export const getFavoritesFromLocalStorage = () => {
 
 // Optional: Clear all favorites
 export const clearFavoritesFromLocalStorage = () => {
-  localStorage.removeItem("favorites");
+  try {
+    localStorage.removeItem("favorites");
+  } catch (error) {
+    console.error("Error clearing favorites from localStorage:", error);
+  }
 };
