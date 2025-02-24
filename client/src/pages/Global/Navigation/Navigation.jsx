@@ -14,12 +14,14 @@ import { useLogoutUserMutation } from "../../../redux/api/authApiSlice";
 import { logout } from "../../../redux/features/auth/authSlice";
 import { toast } from "react-toastify";
 import FavoritesCount from "../../Favorites/FavoritesCount";
+import CartCount from "../../../components/CartCount";
 
 export default function Navigation() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { userInfo } = useSelector((state) => state.auth);
+  const { cartItems } = useSelector((state) => state.cart);
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
@@ -88,20 +90,9 @@ export default function Navigation() {
           className="flex items-center transition-transform transform hover:translate-x-2"
         >
           <AiOutlineShoppingCart className="mr-2 mt-[3rem]" size={26} />
-          <span className="hidden nav-item-name mt-[3rem]">CART</span>
+          <span className="hidden nav-item-name mt-[3rem]">CART</span>{" "}
+          <CartCount />
         </Link>
-        {/* <Link to="/cart" className="flex relative">
-          <div className="flex items-center transition-transform transform hover:translate-x-2">
-            <AiOutlineShoppingCart className="mt-[3rem] mr-2" size={26} />
-            <span className="hidden nav-item-name mt-[3rem]">Cart</span>
-          </div>
-
-          {cartItems.length > 0 && (
-            <span className="absolute top-9 px-1 py-0 text-sm text-white bg-pink-500 rounded-full">
-              {cartItems.reduce((a, c) => a + c.qty, 0)}
-            </span>
-          )}
-        </Link> */}
         <Link
           to="/favorite"
           className="flex items-center transition-transform transform hover:translate-x-2"
@@ -110,13 +101,6 @@ export default function Navigation() {
           <span className="hidden nav-item-name mt-[3rem]">FAVORITES</span>{" "}
           <FavoritesCount />
         </Link>
-        {/* <Link to="/favorite" className="flex relative">
-          <div className="flex items-center transition-transform transform hover:translate-x-2">
-            <FaHeart className="mt-[3rem] mr-2" size={20} />
-            <span className="hidden nav-item-name mt-[3rem]">Favorites</span>
-            <FavoritesCount />
-          </div>
-        </Link> */}
       </div>
 
       {/* User Dropdown */}

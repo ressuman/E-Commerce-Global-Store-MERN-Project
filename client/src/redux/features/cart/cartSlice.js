@@ -10,7 +10,15 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addToCart: (state, action) => {
-      const { user, rating, numReviews, reviews, ...item } = action.payload;
+      // First validate the incoming action payload
+      const incomingItem = action.payload;
+      if (!incomingItem._id || typeof incomingItem.qty !== "number") {
+        console.error("Invalid cart item:", incomingItem);
+        return state;
+      }
+
+      // Then destructure and process
+      const { user, rating, numReviews, reviews, ...item } = incomingItem;
       const existItem = state.cartItems.find((x) => x._id === item._id);
 
       if (existItem) {

@@ -1,5 +1,7 @@
+import { toast } from "react-toastify";
 import { PRODUCT_URL, UPLOAD_URL } from "../../utils/constants";
 import { apiSlice } from "./apiSlice";
+import { setError, setLoading } from "../features/shop/shopSlice";
 
 export const productsAndUploadApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -200,20 +202,44 @@ export const productsAndUploadApiSlice = apiSlice.injectEndpoints({
     }),
 
     // Fetch filtered products
+    // getFilteredProducts: builder.query({
+    //   query: ({ checked, radio }) => ({
+    //     url: `${PRODUCT_URL}/get-filtered-products`,
+    //     method: "POST",
+    //     body: { checked, radio },
+    //   }),
+    //   providesTags: ["Product"],
+    //   keepUnusedDataFor: 60,
+    //   onQueryStarted: async ({ checked, radio }, { queryFulfilled }) => {
+    //     try {
+    //       const result = await queryFulfilled;
+    //       console.log("Fetched filtered products:", result);
+    //     } catch (error) {
+    //       console.error("Error fetching filtered products:", error);
+    //     }
+    //   },
+    // }),
     getFilteredProducts: builder.query({
-      query: ({ checked, radio }) => ({
+      query: (filters) => ({
         url: `${PRODUCT_URL}/get-filtered-products`,
         method: "POST",
-        body: { checked, radio },
+        body: {
+          categories: filters.checkedCategories,
+          brands: filters.checkedBrands,
+          priceRange: filters.priceRange,
+        },
       }),
-      providesTags: ["Product"],
       keepUnusedDataFor: 60,
-      onQueryStarted: async ({ checked, radio }, { queryFulfilled }) => {
+      providesTags: ["Product"],
+      onQueryStarted: async (filters, { dispatch, queryFulfilled }) => {
         try {
-          const result = await queryFulfilled;
-          console.log("Fetched filtered products:", result);
+          dispatch(setLoading(true));
+          await queryFulfilled;
         } catch (error) {
-          console.error("Error fetching filtered products:", error);
+          dispatch(setError(error.message));
+          toast.error("Failed to load products");
+        } finally {
+          dispatch(setLoading(false));
         }
       },
     }),

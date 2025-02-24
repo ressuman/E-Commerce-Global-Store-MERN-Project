@@ -367,51 +367,45 @@ const fetchNewProducts = asyncHandler(async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
-
 // Filter products by category and price range
-// const filterProducts = asyncHandler(async (req, res) => {
-//   try {
-//     const { checked, radio } = req.body;
-
-//     const args = {};
-//     if (checked.length > 0) args.category = checked;
-//     if (radio.length) args.price = { $gte: radio[0], $lte: radio[1] };
-
-//     const products = await Product.find(args);
-//     res.json(products);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: "Server Error" });
-//   }
-// });
 const filterProducts = asyncHandler(async (req, res) => {
   try {
-    const { checked = [], radio = [] } = req.body;
+    const {
+      categories = [],
+      brands = [],
+      priceRange = [0, 1000000],
+    } = req.body;
 
-    // Build the filter object
-    const filter = {};
-    if (checked.length > 0) {
-      // Ensure `checked` contains valid MongoDB ObjectId references
+    const filter = {
+      price: { $gte: priceRange[0], $lte: priceRange[1] },
+    };
+
+    if (categories.length > 0) {
       filter.category = {
-        $in: checked.map((id) => mongoose.Types.ObjectId(id)),
+        $in: categories.map((id) => new mongoose.Types.ObjectId(id)),
       };
     }
-    if (radio.length === 2) {
-      filter.price = { $gte: radio[0], $lte: radio[1] }; // Match price range
+
+    if (brands.length > 0) {
+      filter.brand = { $in: brands };
     }
 
-    // Fetch products matching the filter
-    const filteredProducts = await Product.find(filter).populate(
-      "category",
-      "name"
-    );
+    // Validate price range
+    if (!Array.isArray(priceRange) || priceRange.length !== 2) {
+      return res.status(400).json({ error: "Invalid price range format" });
+    }
 
-    res.status(200).json(filteredProducts);
+    const products = await Product.find(filter)
+      .populate("category", "name")
+      .sort("-createdAt");
+
+    res.json(products);
   } catch (error) {
-    console.error(`Error filtering products: ${error.message}`);
-    res
-      .status(500)
-      .json({ error: "Failed to filter products", message: error.message });
+    console.error(`Filter error: ${error.message}`);
+    res.status(500).json({
+      error: "Filtering failed",
+      message: error.message,
+    });
   }
 });
 

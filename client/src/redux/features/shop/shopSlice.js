@@ -4,25 +4,25 @@ const initialState = {
   categories: [],
   products: [],
   checkedCategories: [],
-  priceRange: [],
-  brands: [],
   checkedBrands: [],
+  priceRange: [0, 1000000], // Default wide range
   error: null,
+  isLoading: false,
 };
 
 const shopSlice = createSlice({
   name: "shop",
   initialState,
   reducers: {
+    // Loading state
+    setLoading: (state, action) => {
+      state.isLoading = action.payload;
+    },
+
     // Initialize shop data
     initializeShopData: (state, action) => {
-      const { categories, brands, products } = action.payload;
-      if (!Array.isArray(categories)) {
-        state.error = "Invalid categories data";
-        return;
-      }
+      const { categories, products } = action.payload;
       state.categories = categories;
-      state.brands = brands;
       state.products = products;
       state.error = null;
     },
@@ -37,61 +37,78 @@ const shopSlice = createSlice({
 
     // Price range selection
     setPriceRange: (state, action) => {
-      if (!Array.isArray(action.payload)) {
-        state.error = "Price range must be an array";
-        return;
+      const [min, max] = action.payload;
+      if (!isNaN(min) && !isNaN(max)) {
+        state.priceRange = [Number(min), Number(max)];
       }
-      state.priceRange = action.payload;
     },
 
     // Brand selection
     toggleBrand: (state, action) => {
-      const brandId = action.payload;
-      state.checkedBrands = state.checkedBrands.includes(brandId)
-        ? state.checkedBrands.filter((id) => id !== brandId)
-        : [...state.checkedBrands, brandId];
+      const brand = action.payload;
+      state.checkedBrands = state.checkedBrands.includes(brand)
+        ? state.checkedBrands.filter((b) => b !== brand)
+        : [...state.checkedBrands, brand];
     },
 
     // Reset all filters
     resetFilters: (state) => {
       state.checkedCategories = [];
-      state.priceRange = [];
       state.checkedBrands = [];
+      state.priceRange = [0, 1000000];
       state.error = null;
     },
 
     // Error handling
-    setShopError: (state, action) => {
+    setError: (state, action) => {
       state.error = action.payload;
     },
   },
 });
 
 // Selectors
+export const selectFilterState = (state) => ({
+  categories: state.shop.categories,
+  //brands: [...new Set(state.shop.products.map((p) => p.brand))],
+  // brands: [
+  //   ...new Set(state.shop.products.flatMap((p) => (p.brand ? [p.brand] : []))),
+  // ],
+  brands: [
+    ...new Set(
+      state.shop.products
+        .map((p) => p.brand)
+        .filter((brand) => brand && brand.trim() !== "")
+    ),
+  ].sort(),
+  checkedCategories: state.shop.checkedCategories,
+  checkedBrands: state.shop.checkedBrands,
+  priceRange: state.shop.priceRange,
+  isLoading: state.shop.isLoading,
+  error: state.shop.error,
+});
+
 export const selectFilteredProducts = (state) => {
   const { products, checkedCategories, checkedBrands, priceRange } = state.shop;
-
   return products.filter((product) => {
-    const matchesCategory =
+    const categoryMatch =
       checkedCategories.length === 0 ||
-      checkedCategories.includes(product.category);
-    const matchesBrand =
+      checkedCategories.includes(product.category?._id);
+    const brandMatch =
       checkedBrands.length === 0 || checkedBrands.includes(product.brand);
-    const matchesPrice =
-      priceRange.length === 0 ||
-      (product.price >= priceRange[0] && product.price <= priceRange[1]);
-
-    return matchesCategory && matchesBrand && matchesPrice;
+    const priceMatch =
+      product.price >= priceRange[0] && product.price <= priceRange[1];
+    return categoryMatch && brandMatch && priceMatch;
   });
 };
 
 export const {
+  setLoading,
   initializeShopData,
   toggleCategory,
-  setPriceRange,
   toggleBrand,
+  setPriceRange,
   resetFilters,
-  setShopError,
+  setError,
 } = shopSlice.actions;
 
 export default shopSlice.reducer;

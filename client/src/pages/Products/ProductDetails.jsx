@@ -9,14 +9,14 @@ import { toast } from "react-toastify";
 import { Loader1 } from "../../components/Loader";
 import Message from "../../components/Message";
 import {
-  FaBox,
   FaBoxes,
   FaCalendarPlus,
   FaClock,
   FaComment,
   FaHistory,
+  FaMinus,
+  FaPlus,
   FaRegStar,
-  FaShoppingCart,
   FaStar,
   FaStarHalfAlt,
   FaStore,
@@ -27,8 +27,9 @@ import moment from "moment";
 import HeartIcon from "../../components/HeartIcon";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import ProductsTab from "./ProductsTab";
+import { addToCart } from "../../redux/features/cart/cartSlice";
 
 export default function ProductDetails() {
   const { id: productId } = useParams();
@@ -73,10 +74,27 @@ export default function ProductDetails() {
     }
   };
 
-  // const addToCartHandler = () => {
-  //   dispatch(addToCart({ ...product, qty }));
-  //   navigate("/cart");
-  // };
+  const addToCartHandler = () => {
+    if (!product || !product._id) {
+      toast.error("Product information is missing");
+      return;
+    }
+
+    if (product.countInStock < qty) {
+      toast.error("Not enough stock available");
+      return;
+    }
+
+    const cartItem = {
+      ...product,
+      qty,
+    };
+
+    dispatch(addToCart(cartItem));
+    toast.success(`${qty} x ${product.name} added to cart!`);
+
+    setTimeout(() => navigate("/cart"), 1000);
+  };
 
   if (isLoading) {
     return <Loader1 />;
@@ -228,7 +246,9 @@ export default function ProductDetails() {
                       : "bg-red-100 text-red-800"
                   }`}
                 >
-                  {product.countInStock}
+                  {product.countInStock > 0
+                    ? `${product.countInStock} available`
+                    : "Out of stock"}
                 </span>
               </div>
               {/* Category */}
@@ -267,44 +287,57 @@ export default function ProductDetails() {
 
             {/* Quantity Selector & Add to Cart */}
             <div className="flex items-center gap-4">
-              {product.countInStock > 0 && (
-                <div className="flex justify-center items-center gap-2 bg-gray-800 rounded-lg p-1">
-                  <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    className="bg-pink-600 text-white w-8 h-8 rounded-md flex items-center justify-center disabled:opacity-50"
-                    onClick={() => setQty(Math.max(1, qty - 1))}
-                    disabled={qty === 1}
-                    aria-label="Decrease quantity"
-                  >
-                    -
-                  </motion.button>
+              {product.countInStock > 0 ? (
+                <div className="flex flex-col gap-2">
+                  <div className="text-sm text-gray-300">
+                    Quantity Available: {product.countInStock}
+                  </div>
+                  <div className="flex justify-center items-center gap-2 bg-gray-800 rounded-lg p-1">
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="bg-pink-600 text-white w-8 h-8 rounded-md flex items-center justify-center disabled:opacity-50"
+                      onClick={() => setQty(Math.max(1, qty - 1))}
+                      disabled={qty === 1}
+                      aria-label="Decrease quantity"
+                    >
+                      <FaMinus className="text-sm" />
+                    </motion.button>
 
-                  <span className="w-10 text-center text-white font-medium">
-                    {qty}
-                  </span>
+                    <span className="w-10 text-center text-white font-medium">
+                      {qty}
+                    </span>
 
-                  <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    className="bg-pink-600 text-white w-8 h-8 rounded-md flex items-center justify-center disabled:opacity-50"
-                    onClick={() =>
-                      setQty(Math.min(product.countInStock, qty + 1))
-                    }
-                    disabled={qty === product.countInStock}
-                    aria-label="Increase quantity"
-                  >
-                    +
-                  </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="bg-pink-600 text-white w-8 h-8 rounded-md flex items-center justify-center disabled:opacity-50"
+                      onClick={() =>
+                        setQty(Math.min(product.countInStock, qty + 1))
+                      }
+                      disabled={qty === product.countInStock}
+                      aria-label="Increase quantity"
+                    >
+                      <FaPlus className="text-sm" />
+                    </motion.button>
+                  </div>
                 </div>
+              ) : (
+                <span className="text-red-400 font-medium">Out of Stock</span>
               )}
 
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                //onClick={addToCartHandler}
+                onClick={addToCartHandler}
                 disabled={product.countInStock === 0}
-                className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-3 rounded-lg transition-all disabled:opacity-50 flex-1"
+                className={`bg-pink-600 text-white px-6 py-3 rounded-lg transition-all flex-1 ${
+                  product.countInStock === 0
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-pink-700"
+                }`}
               >
-                Add to Cart
+                {product.countInStock > 0 ? "Add to Cart" : "Unavailable"}
               </motion.button>
             </div>
           </div>

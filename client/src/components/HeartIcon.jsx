@@ -29,25 +29,11 @@ export default function HeartIcon({ product }) {
     if (isFavorite) {
       dispatch(removeFromFavorites(product));
       removeFavoriteFromLocalStorage(product._id);
-      toast.info(
-        `Removed "${product.name}" from favorites`
-        // {
-        //   position: "bottom-right",
-        //   autoClose: 2000,
-        //   hideProgressBar: true,
-        // }
-      );
+      toast.info(`Removed "${product.name}" from favorites`);
     } else {
       dispatch(addToFavorites(product));
       addFavoriteToLocalStorage(product);
-      toast.success(
-        `Added "${product.name}" to favorites!`
-        // {
-        //   position: "bottom-right",
-        //   autoClose: 2000,
-        //   hideProgressBar: true,
-        // }
-      );
+      toast.success(`Added "${product.name}" to favorites!`);
     }
   };
 
