@@ -14,7 +14,7 @@ import userRoutes from "./routes/userRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
-// import orderRoutes from "./routes/orderRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 import { errorHandler, notFound } from "./middlewares/errorNotFound.js";
 
 dotenv.config();
@@ -49,7 +49,7 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/media", uploadRoutes);
-// app.use("/api/v1/orders", orderRoutes);
+app.use("/api/v1/orders", orderRoutes);
 
 // app.get("/api/v1/config/paypal", (req, res) => {
 //   res.send({ clientId: process.env.PAYPAL_CLIENT_ID });

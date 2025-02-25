@@ -129,7 +129,9 @@ export default function Shop() {
 
             {/* Price Range Filter */}
             <div className="mb-8">
-              <h3 className="font-semibold mb-4">Price Range</h3>
+              <h3 className="font-semibold text-indigo-500 mb-4 text-2xl">
+                Price Range
+              </h3>
               <div className="flex gap-4">
                 <input
                   type="number"
