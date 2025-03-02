@@ -15,6 +15,7 @@ import categoryRoutes from "./routes/categoryRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 import { errorHandler, notFound } from "./middlewares/errorNotFound.js";
 
 dotenv.config();
@@ -38,8 +39,6 @@ app.use(
 
 app.use(morgan("dev")); // Logging requests
 app.use(express.json({ limit: "20mb" })); // Limit JSON payload size
-//app.use(express.json());
-//app.use(express.urlencoded({ extended: true })); // Limit URL-encoded payload size
 app.use(express.urlencoded({ extended: true, limit: "20mb" }));
 app.use(cookieParser());
 
@@ -50,6 +49,7 @@ app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/media", uploadRoutes);
 app.use("/api/v1/orders", orderRoutes);
+app.use("/api/v1/config/stripe", paymentRoutes);
 
 // app.get("/api/v1/config/paypal", (req, res) => {
 //   res.send({ clientId: process.env.PAYPAL_CLIENT_ID });

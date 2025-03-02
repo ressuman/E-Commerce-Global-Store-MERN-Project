@@ -75,6 +75,16 @@ const orderSchema = mongoose.Schema(
       email_address: {
         type: String,
       },
+      created: {
+        type: Date,
+      },
+    },
+
+    currency: {
+      type: String,
+      required: true,
+      default: "usd",
+      enum: ["usd"],
     },
 
     itemsPrice: {
@@ -125,6 +135,12 @@ const orderSchema = mongoose.Schema(
     timestamps: true,
   }
 );
+
+orderSchema.index({ user: 1 });
+orderSchema.index({ createdAt: -1 });
+orderSchema.index({ isPaid: 1 });
+orderSchema.index({ isDelivered: 1 });
+orderSchema.index({ totalPrice: 1 });
 
 const Order = mongoose.model("Order", orderSchema);
 

@@ -13,37 +13,38 @@ const createOrder = async (req, res) => {
 
     // Validate product IDs
     const productIds = orderItems.map((item) => {
-      if (!mongoose.Types.ObjectId.isValid(item._id)) {
-        throw new Error(`Invalid product ID: ${item._id}`);
+      if (!item.product || !mongoose.Types.ObjectId.isValid(item.product)) {
+        throw new Error(`Invalid product ID: ${item.product}`);
       }
-      return item._id;
+      return item.product;
     });
 
     const itemsFromDB = await Product.find({ _id: { $in: productIds } });
 
-    const dbOrderItems = orderItems.map((itemFromClient) => {
-      const matchingItemFromDB = itemsFromDB.find(
-        (item) => item._id.toString() === itemFromClient._id
-      );
-
-      if (!matchingItemFromDB) {
-        throw new Error(`Product not found: ${itemFromClient._id}`);
-      }
-
-      if (matchingItemFromDB.countInStock < itemFromClient.qty) {
-        throw new Error(
-          `Insufficient stock for ${matchingItemFromDB.name} (${itemFromClient.qty} requested)`
+    const dbOrderItems = await Promise.all(
+      orderItems.map(async (itemFromClient) => {
+        const matchingItemFromDB = itemsFromDB.find(
+          (item) => item._id.toString() === itemFromClient.product
         );
-      }
 
-      return {
-        name: matchingItemFromDB.name,
-        qty: itemFromClient.qty,
-        image: matchingItemFromDB.image,
-        price: matchingItemFromDB.price,
-        product: matchingItemFromDB._id,
-      };
-    });
+        if (!matchingItemFromDB) {
+          throw new Error(`Product not found: ${itemFromClient.product}`);
+        }
+
+        if (matchingItemFromDB.countInStock < itemFromClient.qty) {
+          throw new Error(
+            `Insufficient stock for ${matchingItemFromDB.name} (${itemFromClient.qty} requested)`
+          );
+        }
+        return {
+          name: matchingItemFromDB.name,
+          qty: itemFromClient.qty,
+          image: matchingItemFromDB.image,
+          price: matchingItemFromDB.price,
+          product: matchingItemFromDB._id,
+        };
+      })
+    );
 
     // Update product stock
     const bulkOps = dbOrderItems.map((item) => ({
@@ -62,6 +63,7 @@ const createOrder = async (req, res) => {
       user: req.user._id,
       shippingAddress,
       paymentMethod,
+      currency: "usd",
       ...prices,
     });
 
@@ -77,19 +79,44 @@ const createOrder = async (req, res) => {
 
 const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find({}).populate("user", "id username");
-    res.json(orders);
+    // const page = parseInt(req.query.page) || 1;
+    // const limit = parseInt(req.query.limit) || 20;
+    // const skip = (page - 1) * limit;
+
+    const orders = await Order.find({})
+      // .skip(skip)
+      // .limit(limit)
+      .populate("user", "id username email")
+      .sort("-createdAt");
+
+    if (!orders.length) {
+      return res.status(404).json({ message: "No orders found" });
+    }
+
+    const count = await Order.countDocuments();
+
+    res.json({ count, countLength: orders.length, orders });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      error: error.message,
+      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
+    });
   }
 };
 
 const getUserOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user._id });
-    res.json(orders);
+    const orders = await Order.find({ user: req.user._id }).sort("-createdAt");
+
+    res.json({
+      count: orders.length,
+      orders,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      error: error.message,
+      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
+    });
   }
 };
 
@@ -98,17 +125,37 @@ const countTotalOrders = async (req, res) => {
     const totalOrders = await Order.countDocuments();
     res.json({ totalOrders });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      error: error.message,
+      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
+    });
   }
 };
 
 const calculateTotalSales = async (req, res) => {
   try {
-    const orders = await Order.find();
-    const totalSales = orders.reduce((sum, order) => sum + order.totalPrice, 0);
-    res.json({ totalSales });
+    const result = await Order.aggregate([
+      {
+        $match: { isPaid: true },
+      },
+      {
+        $group: {
+          _id: null,
+          totalSales: { $sum: "$totalPrice" },
+          totalOrders: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const totalSales = result[0]?.totalSales || 0;
+    const totalOrders = result[0]?.totalOrders || 0;
+
+    res.json({ totalSales: Number(totalSales.toFixed(2)), totalOrders });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      error: error.message,
+      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
+    });
   }
 };
 
@@ -143,19 +190,20 @@ const calculateTotalSalesByDate = async (req, res) => {
 
 const findOrderById = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id).populate(
-      "user",
-      "username email"
-    );
+    const order = await Order.findById(req.params.id)
+      .populate("user", "username email")
+      .populate("orderItems.product", "name image");
 
-    if (order) {
-      res.json(order);
-    } else {
-      res.status(404);
-      throw new Error("Order not found");
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
     }
+
+    res.json(order);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      error: error.message,
+      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
+    });
   }
 };
 
@@ -194,18 +242,30 @@ const markOrderAsDelivered = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
 
-    if (order) {
-      order.isDelivered = true;
-      order.deliveredAt = Date.now();
-
-      const updatedOrder = await order.save();
-      res.json(updatedOrder);
-    } else {
-      res.status(404);
-      throw new Error("Order not found");
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
     }
+
+    if (order.isDelivered) {
+      return res.status(400).json({ error: "Order already delivered" });
+    }
+
+    if (!order.isPaid) {
+      return res
+        .status(400)
+        .json({ error: "Order must be paid before delivery" });
+    }
+
+    order.isDelivered = true;
+    order.deliveredAt = Date.now();
+
+    const updatedOrder = await order.save();
+    res.json(updatedOrder);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      error: error.message,
+      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
+    });
   }
 };
 

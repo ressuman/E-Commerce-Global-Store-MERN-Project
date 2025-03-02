@@ -1,4 +1,4 @@
-function calcPrices(orderItems) {
+export function calcPrices(orderItems) {
   const itemsPrice = orderItems.reduce(
     (acc, item) => acc + item.price * item.qty,
     0
