@@ -1,7 +1,9 @@
 // config/stripe.js
 import Stripe from "stripe";
+import dotenv from "dotenv";
+dotenv.config();
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2024-06-20",
   typescript: true,
 });
@@ -34,3 +36,55 @@ export const handleWebhook = async (payload, sig) => {
     throw new Error(`Webhook signature verification failed: ${err.message}`);
   }
 };
+
+// Checkout Session Functions
+export const createCheckoutSession = async (
+  customerData,
+  lineItems,
+  successUrl,
+  cancelUrl
+) => {
+  const customer = await stripe.customers.create(customerData);
+
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ["card"],
+    shipping_address_collection: {
+      allowed_countries: ["US", "CA", "KE", "GH", "NG", "GB", "ZA", "AU", "IN"],
+    },
+    shipping_options: [
+      {
+        shipping_rate_data: {
+          type: "fixed_amount",
+          fixed_amount: { amount: 0, currency: "usd" },
+          display_name: "Free shipping",
+          delivery_estimate: {
+            minimum: { unit: "business_day", value: 5 },
+            maximum: { unit: "business_day", value: 7 },
+          },
+        },
+      },
+      {
+        shipping_rate_data: {
+          type: "fixed_amount",
+          fixed_amount: { amount: 1500, currency: "usd" },
+          display_name: "Next day air",
+          delivery_estimate: {
+            minimum: { unit: "business_day", value: 1 },
+            maximum: { unit: "business_day", value: 1 },
+          },
+        },
+      },
+    ],
+    phone_number_collection: { enabled: true },
+    automatic_tax: { enabled: true },
+    line_items: lineItems,
+    mode: "payment",
+    customer: customer.id,
+    success_url: successUrl,
+    cancel_url: cancelUrl,
+  });
+
+  return session;
+};
+
+export default stripe;

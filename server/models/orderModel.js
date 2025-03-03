@@ -84,7 +84,7 @@ const orderSchema = mongoose.Schema(
       type: String,
       required: true,
       default: "usd",
-      enum: ["usd"],
+      enum: ["usd", "ghs", "ngn", "zar", "gbp", "kes", "aud", "inr", "cad"],
     },
 
     itemsPrice: {
@@ -119,6 +119,24 @@ const orderSchema = mongoose.Schema(
 
     paidAt: {
       type: Date,
+    },
+
+    customerId: {
+      type: String,
+    },
+
+    paymentIntentId: {
+      type: String,
+    },
+
+    subtotal: {
+      type: Number,
+      required: true,
+    },
+
+    payment_status: {
+      type: String,
+      required: true,
     },
 
     isDelivered: {

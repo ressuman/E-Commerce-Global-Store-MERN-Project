@@ -21,6 +21,9 @@ import Cart from "./pages/Public/Cart.jsx";
 import Shop from "./pages/Public/Shop.jsx";
 import Favorites from "./pages/Favorites/Favorites.jsx";
 import ProductDetails from "./pages/Products/ProductDetails.jsx";
+import Shipping from "./pages/Orders/Shipping.jsx";
+import PlaceOrder from "./pages/Orders/PlaceOrder.jsx";
+import Order from "./pages/Orders/Order.jsx";
 
 // Router Configuration
 const router = createBrowserRouter(
@@ -38,9 +41,9 @@ const router = createBrowserRouter(
       {/* Protected Routes for Registered Users */}
       <Route path="" element={<PrivateRoute />}>
         <Route path="/profile" element={<Profile />} />
-        {/* <Route path="/shipping" element={<Shipping />} />
-        <Route path="/placeorder" element={<PlaceOrder />} />
-        <Route path="/order/:id" element={<Order />} /> */}
+        <Route path="/shipping" element={<Shipping />} />
+        <Route path="/placeOrder" element={<PlaceOrder />} />
+        <Route path="/order/:id" element={<Order />} />
       </Route>
 
       {/* Admin Routes */}

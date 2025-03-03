@@ -29,6 +29,25 @@ export const ordersAndPaymentApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["Payment"],
     }),
 
+    createStripeCheckoutSession: builder.mutation({
+      query: ({ userId, cartItems }) => ({
+        url: `${PAYMENT_URL}/create-checkout-session`,
+        method: "POST",
+        body: {
+          userId,
+          cartItems: cartItems.map((item) => ({
+            _id: item.product,
+            name: item.name,
+            image: item.image,
+            price: item.price,
+            qty: item.qty,
+            description: item.description,
+          })),
+        },
+      }),
+      invalidatesTags: ["Order", "Payment"],
+    }),
+
     getUserOrders: builder.query({
       query: () => ({
         url: `${ORDERS_URL}/get-user-orders`,
@@ -45,11 +64,12 @@ export const ordersAndPaymentApiSlice = apiSlice.injectEndpoints({
     }),
 
     markOrderAsPaid: builder.mutation({
-      query: (id) => ({
+      query: ({ id, details }) => ({
         url: `${ORDERS_URL}/get-order/${id}/pay`,
         method: "PUT",
+        body: details,
       }),
-      invalidatesTags: (result, error, id) => [{ type: "Order", id: id }],
+      invalidatesTags: (result, error, id) => [{ type: "Order", id }],
     }),
 
     markOrderDelivered: builder.mutation({
@@ -84,6 +104,7 @@ export const {
   useCreateOrderMutation,
   useFindOrderByIdQuery,
   useCreateStripePaymentIntentMutation,
+  useCreateStripeCheckoutSessionMutation,
   useGetUserOrdersQuery,
   useGetAllOrdersQuery,
   useMarkOrderAsPaidMutation,
