@@ -125,6 +125,11 @@ const orderSchema = mongoose.Schema(
       type: String,
     },
 
+    taxRate: {
+      type: Number,
+      required: true,
+    },
+
     paymentIntentId: {
       type: String,
     },

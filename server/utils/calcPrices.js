@@ -1,4 +1,3 @@
-// config/taxes.js
 export const regionalTaxRates = {
   // Africa
   GH: 0.125, // Ghana VAT
@@ -23,14 +22,17 @@ export const regionalTaxRates = {
   DEFAULT: 0.15,
 };
 
-export function calcPrices(orderItems) {
+export function calcPrices(orderItems, country = "DEFAULT") {
   const itemsPrice = orderItems.reduce(
     (acc, item) => acc + item.price * item.qty,
     0
   );
 
+  // Get tax rate based on country
+  const taxRate = regionalTaxRates[country] || regionalTaxRates.DEFAULT;
+
   const shippingPrice = itemsPrice > 100 ? 0 : 10;
-  const taxRate = 0.15;
+  // const taxRate = 0.15;
   const taxPrice = itemsPrice * taxRate;
 
   const totalPrice = itemsPrice + shippingPrice + taxPrice;
@@ -40,5 +42,7 @@ export function calcPrices(orderItems) {
     shippingPrice: Number(shippingPrice.toFixed(2)),
     taxPrice: Number(taxPrice.toFixed(2)),
     totalPrice: Number(totalPrice.toFixed(2)),
+    subtotal: Number(itemsPrice.toFixed(2)),
+    taxRate: Number(taxRate.toFixed(3)),
   };
 }

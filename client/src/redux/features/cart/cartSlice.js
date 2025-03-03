@@ -36,9 +36,17 @@ const cartSlice = createSlice({
       return updateCart(state);
     },
 
+    // saveShippingAddress: (state, action) => {
+    //   state.shippingAddress = action.payload;
+    //   localStorage.setItem("cart", JSON.stringify(state));
+    // },
+
     saveShippingAddress: (state, action) => {
-      state.shippingAddress = action.payload;
-      localStorage.setItem("cart", JSON.stringify(state));
+      state.shippingAddress = {
+        ...action.payload,
+        country: action.payload.country.toUpperCase(),
+      };
+      return updateCart(state);
     },
 
     savePaymentMethod: (state, action) => {

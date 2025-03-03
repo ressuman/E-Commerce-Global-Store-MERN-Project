@@ -12,6 +12,9 @@ export const createWebhookOrder = async (customer, session) => {
     const productIds = items.map((item) => item._id);
     const products = await Product.find({ _id: { $in: productIds } });
 
+    const country =
+      session.customer_details.address?.country?.toUpperCase() || "DEFAULT";
+
     // 3. Build order items with complete product data
     const orderItems = items.map((item) => {
       const product = products.find((p) => p._id.toString() === item.id);
@@ -30,7 +33,7 @@ export const createWebhookOrder = async (customer, session) => {
     });
 
     // 4. Calculate pricing details using your existing calcPrices utility
-    const prices = calcPrices(orderItems); // Expected keys: itemsPrice, taxPrice, shippingPrice, totalPrice, subtotal
+    const prices = calcPrices(orderItems, country); // Expected keys: itemsPrice, taxPrice, shippingPrice, totalPrice, subtotal
 
     // 5. Build order data matching your order model
     const orderData = {
@@ -59,8 +62,9 @@ export const createWebhookOrder = async (customer, session) => {
       paidAt: session.payment_status === "paid" ? new Date() : null,
       customerId: session.customer,
       paymentIntentId: session.payment_intent,
-      //subtotal: prices.subtotal,
-      subtotal: prices.itemsPrice,
+      subtotal: prices.subtotal,
+      taxRate: prices.taxRate,
+      //subtotal: prices.itemsPrice,
       payment_status: session.payment_status,
       isDelivered: false,
     };

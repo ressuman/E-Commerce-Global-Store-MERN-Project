@@ -21,6 +21,8 @@ const createOrder = async (req, res) => {
 
     const itemsFromDB = await Product.find({ _id: { $in: productIds } });
 
+    const country = shippingAddress.country.toUpperCase();
+
     const dbOrderItems = await Promise.all(
       orderItems.map(async (itemFromClient) => {
         const matchingItemFromDB = itemsFromDB.find(
@@ -56,7 +58,7 @@ const createOrder = async (req, res) => {
 
     await Product.bulkWrite(bulkOps);
 
-    const prices = calcPrices(dbOrderItems);
+    const prices = calcPrices(dbOrderItems, country);
 
     const order = new Order({
       orderItems: dbOrderItems,
@@ -65,6 +67,8 @@ const createOrder = async (req, res) => {
       paymentMethod,
       currency: "usd",
       ...prices,
+      taxRate: prices.taxRate,
+      subtotal: prices.subtotal,
     });
 
     const createdOrder = await order.save();
