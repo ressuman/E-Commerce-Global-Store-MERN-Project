@@ -66,11 +66,18 @@ export const updateCart = (state) => {
   const totalPrice = itemsPrice + shippingPrice + taxPrice;
 
   // Update state with formatted prices
-  state.itemsPrice = addDecimals(itemsPrice);
-  state.shippingPrice = addDecimals(shippingPrice);
-  state.taxPrice = addDecimals(taxPrice);
-  state.totalPrice = addDecimals(totalPrice);
-  state.subTotal = addDecimals(itemsPrice);
+  // state.itemsPrice = addDecimals(itemsPrice);
+  // state.shippingPrice = addDecimals(shippingPrice);
+  // state.taxPrice = addDecimals(taxPrice);
+  // state.totalPrice = addDecimals(totalPrice);
+  // state.subTotal = addDecimals(itemsPrice);
+  // state.taxRate = taxRate;
+  state.itemsPrice = itemsPrice;
+  state.shippingPrice = shippingPrice;
+  state.taxPrice = taxPrice;
+  state.totalPrice = totalPrice;
+  state.subTotal = itemsPrice;
+  state.taxRate = taxRate;
 
   // Save to localStorage
   try {

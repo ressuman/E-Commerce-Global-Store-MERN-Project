@@ -131,15 +131,19 @@ export default function Shipping() {
 
     // Success notification with animated checkmark
     toast.success(
-      <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        className="flex items-center gap-2"
-      >
-        Shipping details saved successfully!
-      </motion.div>,
+      <div>
+        {" "}
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="flex items-center gap-2"
+        >
+          Shipping details saved successfully!
+        </motion.div>
+      </div>,
       {
         position: "top-center",
+        transition: Slide,
         onClose: () => {
           navigate("/placeOrder");
         },

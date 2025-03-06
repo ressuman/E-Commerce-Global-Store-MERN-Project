@@ -38,11 +38,17 @@ export function calcPrices(orderItems, country = "DEFAULT") {
   const totalPrice = itemsPrice + shippingPrice + taxPrice;
 
   return {
-    itemsPrice: Number(itemsPrice.toFixed(2)),
-    shippingPrice: Number(shippingPrice.toFixed(2)),
-    taxPrice: Number(taxPrice.toFixed(2)),
-    totalPrice: Number(totalPrice.toFixed(2)),
-    subtotal: Number(itemsPrice.toFixed(2)),
-    taxRate: Number(taxRate.toFixed(3)),
+    // itemsPrice: Number(itemsPrice.toFixed(2)),
+    // shippingPrice: Number(shippingPrice.toFixed(2)),
+    // taxPrice: Number(taxPrice.toFixed(2)),
+    // totalPrice: Number(totalPrice.toFixed(2)),
+    // subtotal: Number(itemsPrice.toFixed(2)),
+    // taxRate: Number(taxRate.toFixed(3)),
+    itemsPrice: Math.round(itemsPrice * 100) / 100,
+    shippingPrice: Math.round(shippingPrice * 100) / 100,
+    taxPrice: Math.round(taxPrice * 100) / 100,
+    totalPrice: Math.round(totalPrice * 100) / 100,
+    taxRate,
+    subtotal: Math.round(itemsPrice * 100) / 100,
   };
 }

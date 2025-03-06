@@ -11,12 +11,16 @@ const createOrder = async (req, res) => {
       return res.status(400).json({ error: "No order items" });
     }
 
+    if (!orderItems || !Array.isArray(orderItems)) {
+      return res.status(400).json({ error: "Invalid order items format" });
+    }
+
     // Validate product IDs
     const productIds = orderItems.map((item) => {
       if (!item.product || !mongoose.Types.ObjectId.isValid(item.product)) {
         throw new Error(`Invalid product ID: ${item.product}`);
       }
-      return item.product;
+      return new mongoose.Types.ObjectId(item.product);
     });
 
     const itemsFromDB = await Product.find({ _id: { $in: productIds } });
@@ -60,6 +64,12 @@ const createOrder = async (req, res) => {
 
     const prices = calcPrices(dbOrderItems, country);
 
+    console.log("Creating order with:", {
+      user: req.user._id,
+      itemsCount: dbOrderItems.length,
+      totalPrice: prices.totalPrice,
+    });
+
     const order = new Order({
       orderItems: dbOrderItems,
       user: req.user._id,
@@ -69,9 +79,18 @@ const createOrder = async (req, res) => {
       ...prices,
       taxRate: prices.taxRate,
       subtotal: prices.subtotal,
+      payment_status: "pending",
     });
 
     const createdOrder = await order.save();
+
+    const outOfStockItems = dbOrderItems.filter(
+      (item) => item.product.countInStock < item.qty
+    );
+
+    if (outOfStockItems.length > 0) {
+      throw new Error(`Insufficient stock for ${outOfStockItems.length} items`);
+    }
     res.status(201).json(createdOrder);
   } catch (error) {
     res.status(error.statusCode || 500).json({
